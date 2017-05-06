@@ -1,0 +1,36 @@
+{
+  "name": "howlongtobeat",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Christian Katzorke <ckatzorke@gmail.com>",
+  "license": "WTFPL",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec dist/test/**/*.test.js",
+    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckatzorke/howlongtobeat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ckatzorke/howlongtobeat/issues"
+  },
+  "homepage": "https://github.com/ckatzorke/howlongtobeat",
+  "dependencies": {
+    "fast-levenshtein": "^2.0.6",
+    "htmlparser": "^1.7.7",
+    "soupselect": "^0.2.0",
+    "unirest": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^3.5.2",
+    "@types/chai-as-promised": "^0.0.30",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.14",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "mocha": "^3.3.0",
+    "typescript": "^2.3.2"
+  }
+}

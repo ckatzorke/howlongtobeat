@@ -17,8 +17,9 @@ class HowLongToBeatService {
         this.scraper = new htmlscraper_1.HtmlScraper();
     }
     /**
-     * Get HowLongToBeatEntry from game id
-     * @param gameId
+     * Get HowLongToBeatEntry from game id, by fetching the detail page like https://howlongtobeat.com/game.php?id=6974 and parsing it.
+     * @param gameId the hltb internal gameid
+     * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
      */
     detail(gameId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -57,6 +58,13 @@ exports.HowLongToBeatEntry = HowLongToBeatEntry;
  * Internal helper class to parse html and create a HowLongToBeatEntry
  */
 class HowLongToBeatParser {
+    /**
+     * Parses the passed html to generate a HowLongToBeatyEntrys.
+     * All the dirty DOM parsing and element traversing is done here.
+     * @param html the html as basis for the parsing. taking directly from the response of the hltb detail page
+     * @param id the hltb internal id
+     * @return HowLongToBeatEntry representing the page
+     */
     static parseDetails(html, id) {
         let gameName = '';
         let imageUrl = '';
@@ -87,6 +95,13 @@ class HowLongToBeatParser {
         parser.parseComplete(html);
         return new HowLongToBeatEntry(id, gameName, imageUrl, gameplayMain, gameplayComplete, 1);
     }
+    /**
+     * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
+     * All the dirty DOM parsing and element traversing is done here.
+     * @param html the html as basis for the parsing. taking directly from the response of the hltb search
+     * @param searchTerm the query what was searched, only used to calculate the similarity
+     * @return an Array<HowLongToBeatEntry>s
+     */
     static parseSearch(html, searchTerm) {
         //console.log('html', html);
         let results = new Array();
@@ -107,22 +122,34 @@ class HowLongToBeatParser {
                         //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
                         let main;
                         let complete;
-                        let times = select(li, ".search_list_details_block")[0];
-                        times
-                            .children
-                            .forEach((div) => {
-                            if (div.type === 'tag') {
-                                let type = div.children[1].children[0].raw.trim();
-                                let time = HowLongToBeatParser.parseTime(div.children[3].children[0].raw.trim());
-                                if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
-                                    main = time;
+                        let times = select(li, ".search_list_details_block")[0].children[1];
+                        let timeEntries = times.children.length;
+                        for (let i = 0; i <= timeEntries;) {
+                            let div = times.children[i];
+                            if (div && div.type && div.type === 'tag') {
+                                try {
+                                    let type = div.children[0].raw.trim();
+                                    if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
+                                        let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
+                                        main = time;
+                                    }
+                                    else if (type.startsWith('Completionist')) {
+                                        let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
+                                        complete = time;
+                                    }
+                                    i += 2;
                                 }
-                                else if (type.startsWith('Completionist')) {
-                                    complete = time;
+                                catch (e) {
+                                    console.log(e);
                                 }
                             }
-                        });
-                        results.push(new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm)));
+                            else {
+                                i++;
+                            }
+                        }
+                        let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
+                        console.log(entry);
+                        results.push(entry);
                     });
                 }
                 else {
@@ -154,9 +181,10 @@ class HowLongToBeatParser {
         return HowLongToBeatParser.getTime(text);
     }
     /**
+     * Parses a range of numbers and creates the average.
        * @param text
        *            like '5 Hours - 12 Hours' or '2½ Hours - 33½ Hours'
-       * @return
+       * @return he arithmetic median of the range
        */
     static handleRange(text) {
         let range = text.split(' - ');
@@ -164,9 +192,10 @@ class HowLongToBeatParser {
         return d;
     }
     /**
+   * Parses a string to get a number
      * @param text,
      *            can be '12 Hours' or '5½ Hours'
-     * @return
+     * @return the ttime, parsed from text
      */
     static getTime(text) {
         let time = text.substring(0, text.indexOf(" "));
@@ -175,6 +204,13 @@ class HowLongToBeatParser {
         }
         return parseInt(time);
     }
+    /**
+     * Calculates the similarty of two strings based on the levenshtein distance in relation to the string lengths.
+     * It is used to see how similar the search term is to the game name. This, of course has only relevance if the search term is really specific and matches the game name as good as possible.
+     * When using a proper search index, this would be the ranking/rating and much more sophisticated than this helper.
+     * @param text the text to compare to
+     * @param term the string of which the similarity is wanted
+     */
     static calcDistancePercentage(text, term) {
         let longer = text.toLowerCase();
         let shorter = term.toLowerCase();
@@ -184,13 +220,11 @@ class HowLongToBeatParser {
             longer = shorter;
             shorter = temp;
         }
-        console.log(`longer=${longer} shorter=${shorter}`);
         let longerLength = longer.length;
         if (longerLength == 0) {
             return 1.0;
         }
         let distance = levenshtein.get(longer, shorter);
-        console.log(`distance=${distance}`);
         return Math.round((longerLength - distance) / longerLength * 100) / 100;
     }
 }

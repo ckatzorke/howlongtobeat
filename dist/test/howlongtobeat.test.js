@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai = require("chai");
-const howlongtobeat_1 = require("../../main/ts/howlongtobeat");
+const howlongtobeat_1 = require("../main/howlongtobeat");
 const expect = chai.expect;
 const assert = chai.assert;
 describe('Testing HowLongToBeatParser', () => {

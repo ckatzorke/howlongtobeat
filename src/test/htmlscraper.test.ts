@@ -2,7 +2,7 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 
-import { HtmlScraper } from '../../main/ts/htmlscraper';
+import { HtmlScraper } from '../main/htmlscraper';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

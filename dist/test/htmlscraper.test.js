@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
-const htmlscraper_1 = require("../../main/ts/htmlscraper");
+const htmlscraper_1 = require("../main/htmlscraper");
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const assert = chai.assert;

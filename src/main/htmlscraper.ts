@@ -1,5 +1,8 @@
 const unirest: any = require('unirest');
 
+/**
+ * Takes care about the http connection and response handling
+ */
 export class HtmlScraper {
 
   async detailHtml(url: string): Promise<string> {

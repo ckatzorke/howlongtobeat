@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai = require("chai");
-const howlongtobeat_1 = require("../../main/ts/howlongtobeat");
+const howlongtobeat_1 = require("../main/howlongtobeat");
 const expect = chai.expect;
 const assert = chai.assert;
 describe('Integration-Testing HowLongToBeatService', () => {
@@ -35,7 +35,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.strictEqual(result[0].name, 'Dark Souls III');
                 assert.strictEqual(result[0].imageUrl, 'https://howlongtobeat.com/gameimages/Dark_souls_3_cover_art.jpg');
                 assert.strictEqual(result[0].gameplayMain, 31.5);
-                assert.strictEqual(result[0].gameplayCompletionist, 81.5);
+                assert.strictEqual(result[0].gameplayCompletionist, 81);
             });
         });
         it('should have 1 search results with 100% similarity when searching for Persona 4: Golden', () => {

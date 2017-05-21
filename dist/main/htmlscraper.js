@@ -9,6 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const unirest = require('unirest');
+/**
+ * Takes care about the http connection and response handling
+ */
 class HtmlScraper {
     detailHtml(url) {
         return __awaiter(this, void 0, void 0, function* () {

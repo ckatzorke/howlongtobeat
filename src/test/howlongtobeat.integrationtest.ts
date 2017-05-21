@@ -1,7 +1,7 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 
-import { HowLongToBeatService, HowLongToBeatEntry } from '../../main/ts/howlongtobeat';
+import { HowLongToBeatService, HowLongToBeatEntry } from '../main/howlongtobeat';
 
 const expect = chai.expect;
 const assert = chai.assert;
@@ -43,7 +43,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
         assert.strictEqual(result[0].name, 'Dark Souls III');
         assert.strictEqual(result[0].imageUrl, 'https://howlongtobeat.com/gameimages/Dark_souls_3_cover_art.jpg');
         assert.strictEqual(result[0].gameplayMain, 31.5);
-        assert.strictEqual(result[0].gameplayCompletionist, 81.5);
+        assert.strictEqual(result[0].gameplayCompletionist, 81);
       });
     });
 

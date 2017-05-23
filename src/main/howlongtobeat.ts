@@ -133,7 +133,6 @@ export class HowLongToBeatParser {
               }
             }
             let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
-            console.log(entry);
             results.push(entry);
           });
         } else {

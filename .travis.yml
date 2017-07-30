@@ -4,7 +4,7 @@ node_js:
 cache:
   directories:
     - "node_modules"
-deploy:
-  provider: npm
-  email: "EMAI_FROM_ENV"
-  api_key: "YOUR_API_KEY_FROM_ENV"
+#deploy:
+#  provider: npm
+#  email: "EMAI_FROM_ENV"
+#  api_key: "YOUR_API_KEY_FROM_ENV"

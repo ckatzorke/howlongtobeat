@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "mocha --reporter spec dist/test/**/*.test.js",
-    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js",
-    "prepublish": "build && test"
+    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js"
   },
   "repository": {
     "type": "git",

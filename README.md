@@ -1,5 +1,7 @@
 # Howlongtobeat API
 
+![Latest Build Status](https://api.travis-ci.org/ckatzorke/howlongtobeat.svg?branch=master)
+
 ## About & Credits
 
 [How long to beat](https://howlongtobeat.com/) provides information and data about games and how long it will take to finish them.

@@ -120,32 +120,37 @@ class HowLongToBeatParser {
                         let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
                         let gameImage = HowLongToBeatService.BASE_URL + select(gameTitleAnchor, 'img')[0].attribs.src;
                         //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
-                        let main;
-                        let complete;
-                        let times = select(li, ".search_list_details_block")[0].children[1];
-                        let timeEntries = times.children.length;
-                        for (let i = 0; i <= timeEntries;) {
-                            let div = times.children[i];
-                            if (div && div.type && div.type === 'tag') {
-                                try {
-                                    let type = div.children[0].raw.trim();
-                                    if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
-                                        let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
-                                        main = time;
+                        let main = 0;
+                        let complete = 0;
+                        try {
+                            let times = select(li, ".search_list_details_block")[0].children[1];
+                            let timeEntries = times.children.length;
+                            for (let i = 0; i <= timeEntries;) {
+                                let div = times.children[i];
+                                if (div && div.type && div.type === 'tag') {
+                                    try {
+                                        let type = div.children[0].raw.trim();
+                                        if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
+                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
+                                            main = time;
+                                        }
+                                        else if (type.startsWith('Completionist')) {
+                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
+                                            complete = time;
+                                        }
+                                        i += 2;
                                     }
-                                    else if (type.startsWith('Completionist')) {
-                                        let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
-                                        complete = time;
+                                    catch (e) {
+                                        console.log(e);
                                     }
-                                    i += 2;
                                 }
-                                catch (e) {
-                                    console.log(e);
+                                else {
+                                    i++;
                                 }
                             }
-                            else {
-                                i++;
-                            }
+                        }
+                        catch (e) {
+                            console.error('Error parsing entries...', e);
                         }
                         let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
                         results.push(entry);

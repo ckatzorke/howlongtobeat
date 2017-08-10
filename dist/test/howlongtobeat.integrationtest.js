@@ -12,8 +12,8 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.strictEqual(entry.id, '2224');
                 assert.strictEqual(entry.name, 'Dark Souls');
                 assert.strictEqual(entry.imageUrl, 'https://howlongtobeat.com/gameimages/Dark_Souls_Cover_Art.jpg');
-                assert.strictEqual(entry.gameplayMain, 49);
-                assert.strictEqual(entry.gameplayCompletionist, 110);
+                assert.isTrue(entry.gameplayMain > 40);
+                assert.isTrue(entry.gameplayCompletionist > 100);
             });
         });
         it('should fail to load entry for 123 (404)', () => {
@@ -27,15 +27,15 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.strictEqual(result.length, 0);
             });
         });
-        it('should have 3 search results when searching for dark souls III', () => {
+        it('should have at least 3 search results when searching for dark souls III', () => {
             return new howlongtobeat_1.HowLongToBeatService().search('dark souls III').then((result) => {
                 assert.isNotNull(result);
-                assert.strictEqual(result.length, 3);
+                assert.isTrue(result.length > 3);
                 assert.strictEqual(result[0].id, '26803');
                 assert.strictEqual(result[0].name, 'Dark Souls III');
                 assert.strictEqual(result[0].imageUrl, 'https://howlongtobeat.com/gameimages/Dark_souls_3_cover_art.jpg');
-                assert.strictEqual(result[0].gameplayMain, 31.5);
-                assert.strictEqual(result[0].gameplayCompletionist, 81);
+                assert.isTrue(result[0].gameplayMain > 30);
+                assert.isTrue(result[0].gameplayCompletionist > 80);
             });
         });
         it('should have 1 search results with 100% similarity when searching for Persona 4: Golden', () => {
@@ -43,6 +43,13 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.isNotNull(result);
                 assert.strictEqual(result.length, 1);
                 assert.strictEqual(result[0].similarity, 1);
+            });
+        });
+        it('Entries without any time settings (e.g. "Surge") should have a zero hour result', () => {
+            return new howlongtobeat_1.HowLongToBeatService().search('Surge').then((result) => {
+                assert.isNotNull(result);
+                assert.isTrue(result.length > 1);
+                assert.strictEqual(result[0].gameplayMain, 0);
             });
         });
     });

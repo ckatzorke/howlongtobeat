@@ -2,6 +2,7 @@
 
 ![Latest Build Status](https://api.travis-ci.org/ckatzorke/howlongtobeat.svg?branch=master)
 [![npm version](https://badge.fury.io/js/howlongtobeat.svg)](https://badge.fury.io/js/howlongtobeat)
+[![codecov](https://codecov.io/gh/ckatzorke/howlongtobeat/branch/master/graph/badge.svg)](https://codecov.io/gh/ckatzorke/howlongtobeat)
 
 ## About & Credits
 

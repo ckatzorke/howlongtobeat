@@ -9,7 +9,7 @@
     "build": "tsc",
     "pretest": "tsc --sourcemap",
     "test": "nyc mocha spec dist/test/**/*.test.js",
-    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js",
+    "integrationtest": "nyc mocha spec dist/test/**/*.integrationtest.js",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
   },
   "repository": {

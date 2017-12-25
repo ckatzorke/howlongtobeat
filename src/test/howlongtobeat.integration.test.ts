@@ -57,6 +57,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
 
     it('Entries without any time settings (e.g. "Surge") should have a zero hour result', () => {
       return new HowLongToBeatService().search('Surge').then((result) => {
+        console.log(result);
         assert.isNotNull(result);
         assert.isTrue(result.length  > 1);
         assert.strictEqual(result[0].gameplayMain, 0);

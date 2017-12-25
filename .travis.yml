@@ -4,7 +4,7 @@ node_js:
 cache:
   directories:
     - "node_modules"
-before_deploy: "npm run integrationtest"
+before_deploy: "npm test"
 deploy:
   provider: npm
   email: $NPM_EMAIL

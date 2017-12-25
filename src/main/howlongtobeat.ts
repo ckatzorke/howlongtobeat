@@ -133,7 +133,7 @@ export class HowLongToBeatParser {
                 }
               }
             } catch (e) {
-              throw e;
+              //ignore error, probably no time entries;
             }
             let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
             results.push(entry);

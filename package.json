@@ -5,9 +5,12 @@
   "author": "Christian Katzorke <ckatzorke@gmail.com>",
   "license": "WTFPL",
   "scripts": {
+    "postinstall": "tsd install",
     "build": "tsc",
-    "test": "mocha --reporter spec dist/test/**/*.test.js",
-    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js"
+    "pretest": "tsc test/*.ts --module commonjs --sourcemap",
+    "test": "nyc mocha --reporter=lcov --reporter=text-lcov spec dist/test/**/*.test.js",
+    "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js",
+    "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"
   },
   "repository": {
     "type": "git",
@@ -31,6 +34,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "mocha": "^3.3.0",
+    "nyc": "^11.4.1",
     "typescript": "^2.4.2"
   }
 }

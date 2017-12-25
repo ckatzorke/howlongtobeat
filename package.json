@@ -5,8 +5,9 @@
   "author": "Christian Katzorke <ckatzorke@gmail.com>",
   "license": "WTFPL",
   "scripts": {
+    "postinstall": "tsc",
     "build": "tsc",
-    "pretest": "tsc test/*.ts --module commonjs --sourcemap",
+    "pretest": "tsc src/test/*.ts --module commonjs --sourcemap",
     "test": "nyc mocha --reporter=lcov --reporter=text-lcov spec dist/test/**/*.test.js",
     "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"

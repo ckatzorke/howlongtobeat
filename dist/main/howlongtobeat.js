@@ -184,7 +184,7 @@ class HowLongToBeatParser {
      * Parses a range of numbers and creates the average.
        * @param text
        *            like '5 Hours - 12 Hours' or '2½ Hours - 33½ Hours'
-       * @return he arithmetic median of the range
+       * @return the arithmetic median of the range
        */
     static handleRange(text) {
         let range = text.split(' - ');

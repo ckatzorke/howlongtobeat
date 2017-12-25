@@ -33,6 +33,8 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(results[0].imageUrl, 'https://howlongtobeat.com/gameimages/persona_4_golden_large.jpg');
       //
       assert.strictEqual(results[2].gameplayCompletionist, 18.5);
+      //special case with range
+      assert.strictEqual(results[3].gameplayMain, 18);
       assert.strictEqual(results[4].gameplayMain, 10);
     });
   });

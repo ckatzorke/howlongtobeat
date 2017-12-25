@@ -5,7 +5,6 @@
   "author": "Christian Katzorke <ckatzorke@gmail.com>",
   "license": "WTFPL",
   "scripts": {
-    "postinstall": "tsc",
     "build": "tsc",
     "pretest": "tsc --sourcemap",
     "test": "nyc mocha spec dist/test/**/*.test.js",

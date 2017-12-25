@@ -233,3 +233,4 @@ class HowLongToBeatParser {
     }
 }
 exports.HowLongToBeatParser = HowLongToBeatParser;
+//# sourceMappingURL=howlongtobeat.js.map

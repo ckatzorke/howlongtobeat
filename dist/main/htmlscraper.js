@@ -62,3 +62,4 @@ class HtmlScraper {
     }
 }
 exports.HtmlScraper = HtmlScraper;
+//# sourceMappingURL=htmlscraper.js.map

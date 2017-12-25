@@ -16,3 +16,4 @@ describe('Testing HowLongToBeatParser', () => {
         });
     });
 });
+//# sourceMappingURL=howlongtobeat.test.js.map

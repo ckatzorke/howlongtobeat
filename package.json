@@ -7,7 +7,7 @@
   "scripts": {
     "postinstall": "tsc",
     "build": "tsc",
-    "pretest": "tsc src/test/*.ts --sourcemap",
+    "pretest": "tsc --sourcemap",
     "test": "nyc mocha --reporter=lcov --reporter=text-lcov spec dist/test/**/*.test.js",
     "integrationtest": "mocha --reporter spec dist/test/**/*.integrationtest.js",
     "posttest": "nyc report --reporter=json && codecov -f coverage/*.json"

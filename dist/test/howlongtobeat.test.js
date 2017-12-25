@@ -23,6 +23,7 @@ describe('Testing HowLongToBeatParser', () => {
             assert.isTrue(results.length === 5);
             assert.strictEqual(results[0].name, 'Persona 4: Golden');
             assert.strictEqual(results[0].similarity, .53);
+            assert.strictEqual(results[0].imageUrl, 'https://howlongtobeat.com/gameimages/persona_4_golden_large.jpg');
             //
             assert.strictEqual(results[2].gameplayCompletionist, 18.5);
             assert.strictEqual(results[4].gameplayMain, 10);

@@ -117,7 +117,7 @@ class HowLongToBeatParser {
                         let gameTitleAnchor = select(li, 'a')[0];
                         let gameName = gameTitleAnchor.attribs.title;
                         let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
-                        let gameImage = HowLongToBeatService.BASE_URL + select(gameTitleAnchor, 'img')[0].attribs.src;
+                        let gameImage = select(gameTitleAnchor, 'img')[0].attribs.src;
                         //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
                         let main = 0;
                         let complete = 0;

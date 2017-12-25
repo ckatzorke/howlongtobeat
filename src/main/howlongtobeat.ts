@@ -95,8 +95,7 @@ export class HowLongToBeatParser {
     let results: Array<HowLongToBeatEntry> = new Array<HowLongToBeatEntry>();
     let handler = new htmlparser.DefaultHandler((err, dom) => {
       if (err) {
-        //Error handling!
-        console.error(err);
+        throw err;
       } else {
         //check for result page
         if (select(dom, 'h3').length > 0) {
@@ -127,20 +126,18 @@ export class HowLongToBeatParser {
                     }
                     i += 2;
                   } catch (e) {
-                    console.log(e);
+                    throw e;
                   }
                 } else {
                   i++;
                 }
               }
             } catch (e) {
-              console.error('Error parsing entries...', e);
+              throw e;
             }
             let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
             results.push(entry);
           });
-        } else {
-          results;
         }
       }
     });

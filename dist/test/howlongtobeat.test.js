@@ -42,5 +42,32 @@ describe('Testing HowLongToBeatParser', () => {
             assert.strictEqual(detail.gameplayMain, 10);
         });
     });
+    describe('Test for parsing minutes correctly from detail page. Example is Street Fighter which claims to take 50 Mins to beat (main)', () => {
+        it('should parse the main time correctly  (static, from id=9224 - Street Fighter, takes 50 Minutes)', () => {
+            const html = fs.readFileSync('src/test/resources/detail_street_fighter.html', 'utf-8');
+            const detail = howlongtobeat_1.HowLongToBeatParser.parseDetails(html, '9224');
+            assert.isDefined(detail);
+            assert.strictEqual(detail.name, 'Street Fighter');
+            assert.strictEqual(detail.similarity, 1);
+            //should be one, since 1 hours is the minimum
+            assert.strictEqual(detail.gameplayMain, 1);
+        });
+    });
+    describe('Test for parsing minutes correctly from search list. Example is Street Fighter which claims to take 50 Mins to beat (main)', () => {
+        it('should parse the main time correctly from search (static, from search "Street Fighter")', () => {
+            const html = fs.readFileSync('src/test/resources/search_street_fighter.html', 'utf-8');
+            const search = howlongtobeat_1.HowLongToBeatParser.parseSearch(html, 'Street Fighter');
+            assert.isDefined(search);
+            assert.strictEqual(search.length, 18);
+            const streetFighter = search[0];
+            assert.strictEqual(streetFighter.name, 'Street Fighter');
+            assert.strictEqual(streetFighter.gameplayMain, 1);
+            assert.strictEqual(streetFighter.gameplayCompletionist, 3.5);
+            const streetFighterAlpha = search[15];
+            assert.strictEqual(streetFighterAlpha.name, 'Street Fighter Alpha: Warriors\' Dreams');
+            assert.strictEqual(streetFighterAlpha.gameplayMain, 1);
+            assert.strictEqual(streetFighterAlpha.gameplayCompletionist, 3.5);
+        });
+    });
 });
 //# sourceMappingURL=howlongtobeat.test.js.map

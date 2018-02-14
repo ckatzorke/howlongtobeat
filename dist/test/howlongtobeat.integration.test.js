@@ -39,7 +39,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
             });
         });
         it('should have 1 search results with 100% similarity when searching for Persona 4: Golden', () => {
-            return new howlongtobeat_1.HowLongToBeatService().search('Persona 4: Golden').then((result) => {
+            return new howlongtobeat_1.HowLongToBeatService().search('Persona 4 Golden').then((result) => {
                 assert.isNotNull(result);
                 assert.strictEqual(result.length, 1);
                 assert.strictEqual(result[0].similarity, 1);

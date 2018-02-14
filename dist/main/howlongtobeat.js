@@ -171,7 +171,7 @@ class HowLongToBeatParser {
        * @return the pares time as double
        */
     static parseTime(text) {
-        // '65&#189; Hours'; '--' if not known
+        // '65&#189; Hours/Mins'; '--' if not known
         if (text === '--') {
             return 0;
         }
@@ -194,10 +194,15 @@ class HowLongToBeatParser {
     /**
    * Parses a string to get a number
      * @param text,
-     *            can be '12 Hours' or '5½ Hours'
+     *            can be '12 Hours' or '5½ Hours' or '50 Mins'
      * @return the ttime, parsed from text
      */
     static getTime(text) {
+        //check for Mins, then assume 1 hour at least
+        const timeUnit = text.substring(text.indexOf(" ") + 1).trim();
+        if (timeUnit === 'Mins') {
+            return 1;
+        }
         let time = text.substring(0, text.indexOf(" "));
         if (time.indexOf('&#189;') > -1) {
             return 0.5 + parseInt(time.substring(0, text.indexOf('&#189;')));

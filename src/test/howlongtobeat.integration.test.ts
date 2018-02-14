@@ -43,12 +43,12 @@ describe('Integration-Testing HowLongToBeatService', () => {
         assert.strictEqual(result[0].name, 'Dark Souls III');
         assert.strictEqual(result[0].imageUrl, 'https://howlongtobeat.com/gameimages/Dark_souls_3_cover_art.jpg');
         assert.isTrue(result[0].gameplayMain > 30);
-        assert.isTrue(result[0].gameplayCompletionist >  80);
+        assert.isTrue(result[0].gameplayCompletionist > 80);
       });
     });
 
     it('should have 1 search results with 100% similarity when searching for Persona 4: Golden', () => {
-      return new HowLongToBeatService().search('Persona 4: Golden').then((result) => {
+      return new HowLongToBeatService().search('Persona 4 Golden').then((result) => {
         assert.isNotNull(result);
         assert.strictEqual(result.length, 1);
         assert.strictEqual(result[0].similarity, 1);
@@ -59,7 +59,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
       return new HowLongToBeatService().search('Surge').then((result) => {
         console.log(result);
         assert.isNotNull(result);
-        assert.isTrue(result.length  > 1);
+        assert.isTrue(result.length > 1);
         assert.strictEqual(result[0].gameplayMain, 0);
       });
     });

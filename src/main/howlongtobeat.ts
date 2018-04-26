@@ -64,7 +64,7 @@ export class HowLongToBeatParser {
         console.error(err);
       } else {
         gameName = select(dom, '.profile_header')[0].children[0].raw.trim();
-        imageUrl = HowLongToBeatService.BASE_URL + select(dom, '.game_image img')[0].attribs.src;
+        imageUrl = select(dom, '.game_image img')[0].attribs.src;
         let liElements = select(dom, '.game_times li');
         liElements.forEach((li) => {
           let type: string = select(li, 'h5')[0].children[0].raw;
@@ -207,8 +207,8 @@ export class HowLongToBeatParser {
    * @param term the string of which the similarity is wanted 
    */
   static calcDistancePercentage(text: string, term: string): number {
-    let longer: string = text.toLowerCase();
-    let shorter: string = term.toLowerCase();
+    let longer: string = text.toLowerCase().trim();
+    let shorter: string = term.toLowerCase().trim();
     if (longer.length < shorter.length) { // longer should always have
       // greater length
       let temp: string = longer;

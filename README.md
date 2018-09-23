@@ -49,7 +49,7 @@ hltbService.search('Nioh').then(result => console.log(result));
 
 * Search response example:
 
-```json
+```javascript
 [ {
     id: '36936',
     name: 'Nioh',
@@ -84,7 +84,7 @@ The `search()` method will return a `Promise` with an `HowLongToBeatEntry`. If t
 
 * Detail response example:
 
-```json
+```javascript
 {
   id: '36936',
   name: 'Nioh',

@@ -101,7 +101,7 @@ class HowLongToBeatParser {
                 });
             }
         });
-        var parser = new htmlparser.Parser(handler);
+        let parser = new htmlparser.Parser(handler);
         parser.parseComplete(html);
         return new HowLongToBeatEntry(id, gameName, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
     }
@@ -134,7 +134,7 @@ class HowLongToBeatParser {
                         let mainExtra = 0;
                         let complete = 0;
                         try {
-                            var times;
+                            let times;
                             if (HowLongToBeatParser.isOnlineGameTimeData(li)) {
                                 times = select(li, ".search_list_details_block")[0];
                             }
@@ -182,7 +182,7 @@ class HowLongToBeatParser {
                 }
             }
         });
-        var parser = new htmlparser.Parser(handler);
+        let parser = new htmlparser.Parser(handler);
         parser.parseComplete(html);
         return results;
     }

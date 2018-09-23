@@ -50,7 +50,7 @@ hltbService.search('Nioh').then(result => console.log(result));
 * Search response example:
 
 ```json
-[ HowLongToBeatEntry {
+[ {
     id: '36936',
     name: 'Nioh',
     imageUrl: 'https://howlongtobeat.com/gameimages/36936_Nioh.jpg',
@@ -58,8 +58,9 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 34.5,
     gameplayMainExtra: 61,
     gameplayCompletionist: 93.5,
-    similarity: 1 },
-  HowLongToBeatEntry {
+    similarity: 1 
+    },
+    {
     id: '50419',
     name: 'Nioh: Complete Edition',
     imageUrl: 'https://howlongtobeat.com/gameimages/50419_Nioh_Complete_Edition.jpg',
@@ -67,7 +68,8 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 42,
     gameplayMainExtra: 84,
     gameplayCompletionist: 97,
-    similarity: 0.18 }, 
+    similarity: 0.18 
+    }, 
     ... 
 ]
 ```
@@ -83,7 +85,7 @@ The `search()` method will return a `Promise` with an `HowLongToBeatEntry`. If t
 * Detail response example:
 
 ```json
-HowLongToBeatEntry {
+{
   id: '36936',
   name: 'Nioh',
   imageUrl: 'https://howlongtobeat.com/gameimages/36936_Nioh.jpg',

@@ -44,11 +44,13 @@ exports.HowLongToBeatService = HowLongToBeatService;
  * Encapsulates a game detail
  */
 class HowLongToBeatEntry {
-    constructor(id, name, imageUrl, gameplayMain, gameplayCompletionist, similarity) {
+    constructor(id, name, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity) {
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
+        this.timeLabels = timeLabels;
         this.gameplayMain = gameplayMain;
+        this.gameplayMainExtra = gameplayMainExtra;
         this.gameplayCompletionist = gameplayCompletionist;
         this.similarity = similarity;
     }
@@ -68,7 +70,9 @@ class HowLongToBeatParser {
     static parseDetails(html, id) {
         let gameName = '';
         let imageUrl = '';
+        let timeLabels = new Array();
         let gameplayMain = 0;
+        let gameplayMainExtra = 0;
         let gameplayComplete = 0;
         let handler = new htmlparser.DefaultHandler((err, dom) => {
             if (err) {
@@ -84,16 +88,22 @@ class HowLongToBeatParser {
                     let time = HowLongToBeatParser.parseTime(select(li, 'div')[0].children[0].raw);
                     if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
                         gameplayMain = time;
+                        timeLabels.push(['gameplayMain', type]);
                     }
-                    else if (type.startsWith('Completionist')) {
+                    else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
+                        gameplayMainExtra = time;
+                        timeLabels.push(['gameplayMainExtra', type]);
+                    }
+                    else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
                         gameplayComplete = time;
+                        timeLabels.push(['gameplayComplete', type]);
                     }
                 });
             }
         });
-        var parser = new htmlparser.Parser(handler);
+        let parser = new htmlparser.Parser(handler);
         parser.parseComplete(html);
-        return new HowLongToBeatEntry(id, gameName, imageUrl, gameplayMain, gameplayComplete, 1);
+        return new HowLongToBeatEntry(id, gameName, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
     }
     /**
      * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
@@ -119,10 +129,18 @@ class HowLongToBeatParser {
                         let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
                         let gameImage = select(gameTitleAnchor, 'img')[0].attribs.src;
                         //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
+                        let timeLabels = new Array();
                         let main = 0;
+                        let mainExtra = 0;
                         let complete = 0;
                         try {
-                            let times = select(li, ".search_list_details_block")[0].children[1];
+                            let times;
+                            if (HowLongToBeatParser.isOnlineGameTimeData(li)) {
+                                times = select(li, ".search_list_details_block")[0];
+                            }
+                            else {
+                                times = select(li, ".search_list_details_block")[0].children[1];
+                            }
                             let timeEntries = times.children.length;
                             for (let i = 0; i <= timeEntries;) {
                                 let div = times.children[i];
@@ -132,10 +150,17 @@ class HowLongToBeatParser {
                                         if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
                                             let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
                                             main = time;
+                                            timeLabels.push(['gameplayMain', type]);
                                         }
-                                        else if (type.startsWith('Completionist')) {
+                                        else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
+                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
+                                            mainExtra = time;
+                                            timeLabels.push(['gameplayMainExtra', type]);
+                                        }
+                                        else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
                                             let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
                                             complete = time;
+                                            timeLabels.push(['gameplayCompletionist', type]);
                                         }
                                         i += 2;
                                     }
@@ -151,15 +176,32 @@ class HowLongToBeatParser {
                         catch (e) {
                             //ignore error, probably no time entries;
                         }
-                        let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, main, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
+                        let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
                         results.push(entry);
                     });
                 }
             }
         });
-        var parser = new htmlparser.Parser(handler);
+        let parser = new htmlparser.Parser(handler);
         parser.parseComplete(html);
         return results;
+    }
+    /**
+     * Use this method to distinguish time descriptions for Online
+     * from Story mode games.
+     *
+     * Online Game: Solo, Co-Op & Vs.
+     * Story Game: Main Story, Main + Extra, Completionist
+     *
+     * @param times html snippet that contains the times
+     *
+     * @return true if is an online game, false for a story game
+     */
+    static isOnlineGameTimeData(li) {
+        if (select(li, ".search_list_details_block")[0].children[1].raw.includes('search_list_tidbit_short')) {
+            return true;
+        }
+        return false;
     }
     /**
        * Utility method used for parsing a given input text (like
@@ -172,7 +214,7 @@ class HowLongToBeatParser {
        */
     static parseTime(text) {
         // '65&#189; Hours/Mins'; '--' if not known
-        if (text === '--') {
+        if (text.startsWith('--')) {
             return 0;
         }
         if (text.indexOf(' - ') > -1) {

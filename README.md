@@ -1,6 +1,6 @@
 # Howlongtobeat API
 
-![Latest Build Status](https://api.travis-ci.org/ckatzorke/howlongtobeat.svg?branch=master)
+[![Latest Build Status](https://api.travis-ci.org/ckatzorke/howlongtobeat.svg?branch=master)](https://api.travis-ci.org/ckatzorke/howlongtobeat.svg?branch=master)
 [![npm version](https://badge.fury.io/js/howlongtobeat.svg)](https://badge.fury.io/js/howlongtobeat)
 [![codecov](https://codecov.io/gh/ckatzorke/howlongtobeat/branch/master/graph/badge.svg)](https://codecov.io/gh/ckatzorke/howlongtobeat)
 
@@ -21,7 +21,7 @@ npm install howlongtobeat --save
 
 ### Use in code
 
-#### Add imports 
+#### Add imports
 
 * javascript
 
@@ -37,7 +37,6 @@ import { HowLongToBeatService, HowLongToBeatEntry } from 'howlongtobeat';
 
 let hltbService = new HowLongToBeatService();
 ```
-
 
 #### Searching for a game
 
@@ -58,7 +57,7 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 34.5,
     gameplayMainExtra: 61,
     gameplayCompletionist: 93.5,
-    similarity: 1 
+    similarity: 1
     },
     {
     id: '50419',
@@ -68,9 +67,9 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 42,
     gameplayMainExtra: 84,
     gameplayCompletionist: 97,
-    similarity: 0.18 
-    }, 
-    ... 
+    similarity: 0.18
+    },
+    ...
 ]
 ```
 
@@ -96,13 +95,14 @@ The `search()` method will return a `Promise` with an `HowLongToBeatEntry`. If t
   gameplayMain: 34.5,
   gameplayMainExtra: 61,
   gameplayCompletionist: 93.5,
-  similarity: 1 
+  similarity: 1
 }
 ```
 
 ## Time Labels
 
 HLTB has 7 differents ways to count games hours, here they are:
+
 * Main Story
 * Main + Extras
 * Completionist
@@ -123,9 +123,8 @@ This seems to come from either soupselect or unirest. Will look into it and at l
 
 ### Missing features
 
-- Error and Exception handling is almost not present, must be improved
+* Error and Exception handling is almost not present, must be improved
 
 ## License
 
 ![WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-4.png)
-

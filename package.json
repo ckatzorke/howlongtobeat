@@ -33,7 +33,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "codecov": "^3.1.0",
-    "hoek": "^5.0.3",
+    "hoek": "^5.0.4",
     "mocha": "^5.2.0",
     "nyc": "^11.4.1",
     "typescript": "^2.4.2"

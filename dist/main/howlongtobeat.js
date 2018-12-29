@@ -8,8 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const select = require('soupselect').select;
-const htmlparser = require('htmlparser');
+const cheerio = require('cheerio');
 const levenshtein = require('fast-levenshtein');
 const htmlscraper_1 = require("./htmlscraper");
 class HowLongToBeatService {
@@ -68,41 +67,32 @@ class HowLongToBeatParser {
      * @return HowLongToBeatEntry representing the page
      */
     static parseDetails(html, id) {
+        const $ = cheerio.load(html);
         let gameName = '';
         let imageUrl = '';
         let timeLabels = new Array();
         let gameplayMain = 0;
         let gameplayMainExtra = 0;
         let gameplayComplete = 0;
-        let handler = new htmlparser.DefaultHandler((err, dom) => {
-            if (err) {
-                //Error handling!
-                console.error(err);
+        gameName = $('.profile_header')[0].children[0].data.trim();
+        imageUrl = $('.game_image img')[0].attribs.src;
+        let liElements = $('.game_times li');
+        liElements.each(function () {
+            let type = $(this).find('h5').text();
+            let time = HowLongToBeatParser.parseTime($(this).find('div').text());
+            if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
+                gameplayMain = time;
+                timeLabels.push(['gameplayMain', type]);
             }
-            else {
-                gameName = select(dom, '.profile_header')[0].children[0].raw.trim();
-                imageUrl = select(dom, '.game_image img')[0].attribs.src;
-                let liElements = select(dom, '.game_times li');
-                liElements.forEach((li) => {
-                    let type = select(li, 'h5')[0].children[0].raw;
-                    let time = HowLongToBeatParser.parseTime(select(li, 'div')[0].children[0].raw);
-                    if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
-                        gameplayMain = time;
-                        timeLabels.push(['gameplayMain', type]);
-                    }
-                    else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
-                        gameplayMainExtra = time;
-                        timeLabels.push(['gameplayMainExtra', type]);
-                    }
-                    else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
-                        gameplayComplete = time;
-                        timeLabels.push(['gameplayComplete', type]);
-                    }
-                });
+            else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
+                gameplayMainExtra = time;
+                timeLabels.push(['gameplayMainExtra', type]);
+            }
+            else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
+                gameplayComplete = time;
+                timeLabels.push(['gameplayComplete', type]);
             }
         });
-        let parser = new htmlparser.Parser(handler);
-        parser.parseComplete(html);
         return new HowLongToBeatEntry(id, gameName, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
     }
     /**
@@ -113,77 +103,48 @@ class HowLongToBeatParser {
      * @return an Array<HowLongToBeatEntry>s
      */
     static parseSearch(html, searchTerm) {
-        //console.log('html', html);
         let results = new Array();
-        let handler = new htmlparser.DefaultHandler((err, dom) => {
-            if (err) {
-                throw err;
-            }
-            else {
-                //check for result page
-                if (select(dom, 'h3').length > 0) {
-                    let liElements = select(dom, 'li');
-                    liElements.forEach((li) => {
-                        let gameTitleAnchor = select(li, 'a')[0];
-                        let gameName = gameTitleAnchor.attribs.title;
-                        let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
-                        let gameImage = select(gameTitleAnchor, 'img')[0].attribs.src;
-                        //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
-                        let timeLabels = new Array();
-                        let main = 0;
-                        let mainExtra = 0;
-                        let complete = 0;
-                        try {
-                            let times;
-                            if (HowLongToBeatParser.isOnlineGameTimeData(li)) {
-                                times = select(li, ".search_list_details_block")[0];
-                            }
-                            else {
-                                times = select(li, ".search_list_details_block")[0].children[1];
-                            }
-                            let timeEntries = times.children.length;
-                            for (let i = 0; i <= timeEntries;) {
-                                let div = times.children[i];
-                                if (div && div.type && div.type === 'tag') {
-                                    try {
-                                        let type = div.children[0].raw.trim();
-                                        if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
-                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
-                                            main = time;
-                                            timeLabels.push(['gameplayMain', type]);
-                                        }
-                                        else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
-                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
-                                            mainExtra = time;
-                                            timeLabels.push(['gameplayMainExtra', type]);
-                                        }
-                                        else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
-                                            let time = HowLongToBeatParser.parseTime(times.children[i + 2].children[0].raw.trim());
-                                            complete = time;
-                                            timeLabels.push(['gameplayCompletionist', type]);
-                                        }
-                                        i += 2;
-                                    }
-                                    catch (e) {
-                                        throw e;
-                                    }
-                                }
-                                else {
-                                    i++;
-                                }
-                            }
+        const $ = cheerio.load(html);
+        //check for result page
+        if ($('h3').length > 0) {
+            let liElements = $('li');
+            liElements.each(function () {
+                let gameTitleAnchor = $(this).find('a')[0];
+                let gameName = gameTitleAnchor.attribs.title;
+                let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
+                let gameImage = $(gameTitleAnchor).find('img')[0].attribs.src;
+                //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
+                let timeLabels = new Array();
+                let main = 0;
+                let mainExtra = 0;
+                let complete = 0;
+                try {
+                    $(this).find('.search_list_details_block div.shadow_text').each(function () {
+                        let type = $(this).text();
+                        if (type.startsWith('Main Story') || type.startsWith('Single-Player') || type.startsWith('Solo')) {
+                            let time = HowLongToBeatParser.parseTime($(this).next().text());
+                            main = time;
+                            timeLabels.push(['gameplayMain', type]);
                         }
-                        catch (e) {
-                            //ignore error, probably no time entries;
+                        else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
+                            let time = HowLongToBeatParser.parseTime($(this).next().text());
+                            mainExtra = time;
+                            timeLabels.push(['gameplayMainExtra', type]);
                         }
-                        let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
-                        results.push(entry);
+                        else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
+                            let time = HowLongToBeatParser.parseTime($(this).next().text());
+                            complete = time;
+                            timeLabels.push(['gameplayCompletionist', type]);
+                        }
                     });
                 }
-            }
-        });
-        let parser = new htmlparser.Parser(handler);
-        parser.parseComplete(html);
+                catch (e) {
+                    console.error(e);
+                }
+                let entry = new HowLongToBeatEntry(detailId, gameName, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
+                results.push(entry);
+            });
+        }
         return results;
     }
     /**
@@ -197,8 +158,8 @@ class HowLongToBeatParser {
      *
      * @return true if is an online game, false for a story game
      */
-    static isOnlineGameTimeData(li) {
-        if (select(li, ".search_list_details_block")[0].children[1].raw.includes('search_list_tidbit_short')) {
+    static isOnlineGameTimeData(element) {
+        if (element.find('.search_list_tidbit_short').length > 0) {
             return true;
         }
         return false;
@@ -246,8 +207,8 @@ class HowLongToBeatParser {
             return 1;
         }
         let time = text.substring(0, text.indexOf(" "));
-        if (time.indexOf('&#189;') > -1) {
-            return 0.5 + parseInt(time.substring(0, text.indexOf('&#189;')));
+        if (time.indexOf('½') > -1) {
+            return 0.5 + parseInt(time.substring(0, text.indexOf('½')));
         }
         return parseInt(time);
     }
@@ -261,7 +222,7 @@ class HowLongToBeatParser {
     static calcDistancePercentage(text, term) {
         let longer = text.toLowerCase().trim();
         let shorter = term.toLowerCase().trim();
-        if (longer.length < shorter.length) {
+        if (longer.length < shorter.length) { // longer should always have
             // greater length
             let temp = longer;
             longer = shorter;

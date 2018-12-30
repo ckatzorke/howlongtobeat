@@ -115,12 +115,6 @@ Use the `timeLabels` attribute for mapping purposes
 
 ## Known issues
 
-### Errors
-
-    DeprecationWarning: sys is deprecated. Use util instead.
-
-This seems to come from either soupselect or unirest. Will look into it and at least open an issue.
-
 ### Missing features
 
 * Error and Exception handling is almost not present, must be improved

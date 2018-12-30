@@ -20,10 +20,9 @@
   },
   "homepage": "https://github.com/ckatzorke/howlongtobeat",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "fast-levenshtein": "^2.0.6",
-    "htmlparser": "^1.7.7",
-    "soupselect": "^0.2.0",
-    "unirest": "^0.5.1"
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",

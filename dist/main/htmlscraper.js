@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const unirest = require('unirest');
+const request = require('request');
 /**
  * Takes care about the http connection and response handling
  */
@@ -16,12 +16,15 @@ class HtmlScraper {
     detailHtml(url) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = new Promise((resolve, reject) => {
-                unirest.get(url).followRedirect(false).end((response) => {
-                    if (response && response.status === 200 && response.body) {
-                        resolve(response.body);
+                request.get(url, { followRedirect: false }, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    else if (response.statusCode !== 200) {
+                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
                     }
                     else {
-                        reject(new Error('error occurred!'));
+                        resolve(body);
                     }
                 });
             });
@@ -31,29 +34,30 @@ class HtmlScraper {
     search(query, url) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = new Promise((resolve, reject) => {
-                unirest.post(url)
-                    .headers({
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'accept': '*/*'
-                })
-                    .query('page=1')
-                    .form({
-                    'queryString': query,
-                    't': 'games',
-                    'sorthead': 'popular',
-                    'sortd': 'Normal Order',
-                    'plat': '',
-                    'length_type': 'main',
-                    'length_min': '',
-                    'length_max': '',
-                    'detail': '0'
-                })
-                    .end((response) => {
-                    if (response && response.status === 200 && response.body) {
-                        resolve(response.body);
+                request.post(url, {
+                    qs: {
+                        page: 1
+                    },
+                    form: {
+                        'queryString': query,
+                        't': 'games',
+                        'sorthead': 'popular',
+                        'sortd': 'Normal Order',
+                        'plat': '',
+                        'length_type': 'main',
+                        'length_min': '',
+                        'length_max': '',
+                        'detail': '0'
+                    }
+                }, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    else if (response.statusCode !== 200) {
+                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
                     }
                     else {
-                        reject(new Error('error occurred!'));
+                        resolve(body);
                     }
                 });
             });

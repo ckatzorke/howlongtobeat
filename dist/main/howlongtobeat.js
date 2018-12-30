@@ -222,7 +222,7 @@ class HowLongToBeatParser {
     static calcDistancePercentage(text, term) {
         let longer = text.toLowerCase().trim();
         let shorter = term.toLowerCase().trim();
-        if (longer.length < shorter.length) { // longer should always have
+        if (longer.length < shorter.length) {
             // greater length
             let temp = longer;
             longer = shorter;

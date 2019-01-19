@@ -8,7 +8,7 @@ export class HowLongToBeatService {
   private scraper: HtmlScraper = new HtmlScraper();
   public static BASE_URL: string = 'https://howlongtobeat.com/';
   public static DETAIL_URL: string = `${HowLongToBeatService.BASE_URL}game.php?id=`;
-  public static SEARCH_URL: string = `${HowLongToBeatService.BASE_URL}search_main.php`;
+  public static SEARCH_URL: string = `${HowLongToBeatService.BASE_URL}search_results.php`;
 
   constructor() {
 

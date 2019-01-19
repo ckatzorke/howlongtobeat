@@ -37,7 +37,7 @@ class HowLongToBeatService {
 }
 HowLongToBeatService.BASE_URL = 'https://howlongtobeat.com/';
 HowLongToBeatService.DETAIL_URL = `${HowLongToBeatService.BASE_URL}game.php?id=`;
-HowLongToBeatService.SEARCH_URL = `${HowLongToBeatService.BASE_URL}search_main.php`;
+HowLongToBeatService.SEARCH_URL = `${HowLongToBeatService.BASE_URL}search_results.php`;
 exports.HowLongToBeatService = HowLongToBeatService;
 /**
  * Encapsulates a game detail

@@ -42,6 +42,7 @@ export class HowLongToBeatEntry {
     public readonly id: string,
     public readonly name: string,
     public readonly description: string,
+    public readonly playableOn: string[],
     public readonly imageUrl: string,
     public readonly timeLabels: Array<string[]>,
     public readonly gameplayMain: number,
@@ -79,6 +80,19 @@ export class HowLongToBeatParser {
       '.in.back_primary.shadow_box p:first-child'
     ).text();
 
+    let playableOn = [];
+    $('.profile_info').each(function() {
+      const metaData = $(this).text();
+      if (metaData.includes('Playable On')) {
+        playableOn = metaData
+          .replace(/\n/g, '')
+          .replace('Playable On:', '')
+          .split(',')
+          .map(data => data.trim());
+        return;
+      }
+    });
+
     liElements.each(function() {
       let type: string = $(this)
         .find('h5')
@@ -108,6 +122,7 @@ export class HowLongToBeatParser {
       id,
       gameName,
       gameDescription,
+      playableOn,
       imageUrl,
       timeLabels,
       gameplayMain,
@@ -137,6 +152,8 @@ export class HowLongToBeatParser {
       liElements.each(function() {
         let gameTitleAnchor = $(this).find('a')[0];
         let gameName: string = gameTitleAnchor.attribs.title;
+        const gameDescription = '';
+        const playableOn = [];
         let detailId: string = gameTitleAnchor.attribs.href.substring(
           gameTitleAnchor.attribs.href.indexOf('?id=') + 4
         );
@@ -194,7 +211,8 @@ export class HowLongToBeatParser {
         let entry = new HowLongToBeatEntry(
           detailId,
           gameName,
-          '',
+          gameDescription,
+          playableOn,
           gameImage,
           timeLabels,
           main,

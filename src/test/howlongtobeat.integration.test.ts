@@ -1,9 +1,7 @@
-import * as mocha from 'mocha';
 import * as chai from 'chai';
 
-import { HowLongToBeatService, HowLongToBeatEntry } from '../main/howlongtobeat';
+import { HowLongToBeatService } from '../main/howlongtobeat';
 
-const expect = chai.expect;
 const assert = chai.assert;
 
 describe('Integration-Testing HowLongToBeatService', () => {
@@ -12,9 +10,12 @@ describe('Integration-Testing HowLongToBeatService', () => {
 
     it('should load entry for 2224 (Dark Souls)', () => {
       return new HowLongToBeatService().detail('2224').then((entry) => {
+        console.log(entry);
         assert.isNotNull(entry);
         assert.strictEqual(entry.id, '2224');
         assert.strictEqual(entry.name, 'Dark Souls');
+        assert.isTrue(entry.description.includes('Live Through A Million Deaths & Earn Your Legacy.'))
+        assert.deepEqual(entry.playableOn, ['PC', 'PlayStation 3', 'Xbox 360', 'Xbox One']);
         assert.strictEqual(entry.imageUrl, 'https://howlongtobeat.com/gameimages/Dark_Souls_Cover_Art.jpg');
         assert.isTrue(entry.gameplayMain > 40);
         assert.isTrue(entry.gameplayCompletionist > 100);

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai = require("chai");
 const howlongtobeat_1 = require("../main/howlongtobeat");
-const expect = chai.expect;
 const assert = chai.assert;
 describe('Integration-Testing HowLongToBeatService', () => {
     describe('Test for detail()', () => {
@@ -11,6 +10,8 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.isNotNull(entry);
                 assert.strictEqual(entry.id, '2224');
                 assert.strictEqual(entry.name, 'Dark Souls');
+                assert.isTrue(entry.description.includes('Live Through A Million Deaths & Earn Your Legacy.'));
+                assert.deepEqual(entry.playableOn, ['PC', 'PlayStation 3', 'Xbox 360', 'Xbox One']);
                 assert.strictEqual(entry.imageUrl, 'https://howlongtobeat.com/gameimages/Dark_Souls_Cover_Art.jpg');
                 assert.isTrue(entry.gameplayMain > 40);
                 assert.isTrue(entry.gameplayCompletionist > 100);

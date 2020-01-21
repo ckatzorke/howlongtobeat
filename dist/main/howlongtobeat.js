@@ -92,7 +92,6 @@ class HowLongToBeatParser {
                 return;
             }
         });
-        console.log('########## ->', playableOn);
         liElements.each(function () {
             let type = $(this)
                 .find('h5')

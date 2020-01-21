@@ -7,6 +7,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
     describe('Test for detail()', () => {
         it('should load entry for 2224 (Dark Souls)', () => {
             return new howlongtobeat_1.HowLongToBeatService().detail('2224').then((entry) => {
+                console.log(entry);
                 assert.isNotNull(entry);
                 assert.strictEqual(entry.id, '2224');
                 assert.strictEqual(entry.name, 'Dark Souls');

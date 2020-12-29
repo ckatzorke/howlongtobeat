@@ -15,8 +15,6 @@ describe('Integration-Testing HowLongToBeatService', () => {
         assert.strictEqual(entry.id, '2224');
         assert.strictEqual(entry.name, 'Dark Souls');
         assert.isTrue(entry.description.includes('Live Through A Million Deaths & Earn Your Legacy.'))
-        assert.deepEqual(entry.playableOn, ['PC', 'PlayStation 3', 'Xbox 360', 'Xbox One']);
-        assert.strictEqual(entry.imageUrl, 'https://howlongtobeat.com/gameimages/Dark_Souls_Cover_Art.jpg');
         assert.isTrue(entry.gameplayMain > 40);
         assert.isTrue(entry.gameplayCompletionist > 100);
       });
@@ -39,10 +37,9 @@ describe('Integration-Testing HowLongToBeatService', () => {
     it('should have at least 3 search results when searching for dark souls III', () => {
       return new HowLongToBeatService().search('dark souls III').then((result) => {
         assert.isNotNull(result);
-        assert.isTrue(result.length > 3);
+        assert.isTrue(result.length >= 3);
         assert.strictEqual(result[0].id, '26803');
         assert.strictEqual(result[0].name, 'Dark Souls III');
-        assert.strictEqual(result[0].imageUrl, 'https://howlongtobeat.com/gameimages/Dark_souls_3_cover_art.jpg');
         assert.isTrue(result[0].gameplayMain > 30);
         assert.isTrue(result[0].gameplayCompletionist > 80);
       });

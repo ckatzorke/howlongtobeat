@@ -64,6 +64,70 @@ class HtmlScraper {
             return result;
         });
     }
+    account(query, url){
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = new Promise((resolve, reject) => {
+                request.post(url, {
+                    qs: {
+                        page: 1
+                    },
+                    form: {
+                        queryString: "",
+                        n: query,
+                        v: "list",
+                        playing: "undefined",
+                        backlog: "undefined",
+                        replays: "undefined",
+                        custom: "undefined",
+                        custom2: "undefined",
+                        custom3: "undefined",
+                        completed: "1",
+                        retired: "undefined",
+                        p: "",
+                        sortd: "Normal",
+                        h: "",
+                    }
+                }, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    else if (response.statusCode !== 200) {
+                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
+                    }
+                    else {
+                        resolve(body);
+                    }
+                });
+            });
+            return result;
+        });
+    }
+    fullDetail(id, url){
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = new Promise((resolve, reject) => {
+                request.post(url, {
+                    qs: {
+                        page: 1
+                    },
+                    form: {
+                        option: id,
+                        option_b: "comp_all",
+                    }
+                }, (error, response, body) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    else if (response.statusCode !== 200) {
+                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
+                    }
+                    else {
+                        resolve(body);
+                    }
+                });
+            });
+            return result;
+        });
+    }
 }
 exports.HtmlScraper = HtmlScraper;
 //# sourceMappingURL=htmlscraper.js.map

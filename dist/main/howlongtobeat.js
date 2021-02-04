@@ -38,14 +38,18 @@ class HowLongToBeatService {
         return __awaiter(this, void 0, void 0, function* (){
             let accountPage = yield this.scraper.account(account, HowLongToBeatService.ACCOUNT_URL);
             let accountGames = HowLongToBeatParser.parseAccount(accountPage, account);
-            return accountGames;
+            let detailPage = yield this.scraper.fullDetail(accountGames, HowLongToBeatService.FULL_LIST_URL);
+            let fullInfo = HowLongToBeatParser.parseFull(detailPage);
+            return fullInfo;
         });
     }
 }
+
 HowLongToBeatService.BASE_URL = 'https://howlongtobeat.com/';
 HowLongToBeatService.DETAIL_URL = `${HowLongToBeatService.BASE_URL}game.php?id=`;
 HowLongToBeatService.SEARCH_URL = `${HowLongToBeatService.BASE_URL}search_results.php`;
 HowLongToBeatService.ACCOUNT_URL = `${HowLongToBeatService.BASE_URL}user_games_list.php`;
+HowLongToBeatService.FULL_LIST_URL = `${HowLongToBeatService.BASE_URL}user_games_detail.php`;
 exports.HowLongToBeatService = HowLongToBeatService;
 /**
  * Encapsulates a game detail
@@ -146,7 +150,6 @@ class HowLongToBeatParser {
         //check for result page
         if ($('h3').length > 0) {
             let liElements = $('li');
-            return liElements;
             liElements.each(function () {
                 let gameTitleAnchor = $(this).find('a')[0];
                 let gameName = gameTitleAnchor.attribs.title;
@@ -202,20 +205,34 @@ class HowLongToBeatParser {
     }
     static parseAccount(html, account) {
         let results = new Array();
+        let accountGames = new Array();
+        let fullDetail = new Array();
         const $ = cheerio.load(html);
         let anchorElements = $('a');
         let gameTitle = '';
-        for (const game of anchorElements){
-            if (game.attribs.title){
-                let id = game.attribs.id.substring( 14 );
-                let title = game.attribs.title; 
-                let gameId = game.attribs.href;
-                let entry = new ProfileEntry(id, title, gameId);
-                results.push(entry);
+        for (let i = 0; i < anchorElements.length; i++){
+            if (anchorElements[i].attribs.title){
+                let id = anchorElements[i].attribs.id.substring( 14 );
+                accountGames.push(id);
             }
         }
-        return results;
+        let testGame = '13528703';
+        return testGame;
     };
+
+    static parseFull(html){
+        let results = new Array();
+        const $ = cheerio.load(html);
+        let h5Elements = $('h5')
+        h5Elements.each(function () {
+            let h5Text = $(this).text();
+            results.push(h5Text);
+        });
+        return results;
+        
+    }
+
+
     /**
      * Use this method to distinguish time descriptions for Online
      * from Story mode games.

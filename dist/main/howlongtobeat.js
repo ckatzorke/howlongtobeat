@@ -38,6 +38,10 @@ class HowLongToBeatService {
         return __awaiter(this, void 0, void 0, function* (){
             let accountPage = yield this.scraper.account(account, HowLongToBeatService.ACCOUNT_URL);
             let accountGames = HowLongToBeatParser.parseAccount(accountPage, account);
+            // loop through account games
+                // send accountgameID to detail page
+                // use detail ID to scrape full info
+                // push the info returned to accountGames object;
             let detailPage = yield this.scraper.fullDetail(accountGames, HowLongToBeatService.FULL_LIST_URL);
             let fullInfo = HowLongToBeatParser.parseFull(detailPage);
             return fullInfo;
@@ -204,20 +208,22 @@ class HowLongToBeatParser {
         return results;
     }
     static parseAccount(html, account) {
-        let results = new Array();
         let accountGames = new Array();
-        let fullDetail = new Array();
         const $ = cheerio.load(html);
-        let anchorElements = $('a');
-        let gameTitle = '';
-        for (let i = 0; i < anchorElements.length; i++){
-            if (anchorElements[i].attribs.title){
-                let id = anchorElements[i].attribs.id.substring( 14 );
-                accountGames.push(id);
-            }
-        }
-        let testGame = '13528703';
-        return testGame;
+        let elements = $('a');
+        elements.each( function (){
+                if ($(this).attr().href.includes('game?id')){
+                let title = $(this).text();
+                let href = $(this).attr().href;
+                let id = $(this).attr().id.substring(14);
+                accountGames.push( {
+                    title: title,
+                    href: href,
+                    id: id,
+                }); 
+                } 
+        });
+        return accountGames;
     };
 
     static parseFull(html){

@@ -36,15 +36,16 @@ class HowLongToBeatService {
     }
     account(account){
         return __awaiter(this, void 0, void 0, function* (){
+            let games = [];
             let accountPage = yield this.scraper.account(account, HowLongToBeatService.ACCOUNT_URL);
             let accountGames = HowLongToBeatParser.parseAccount(accountPage, account);
-            // loop through account games
-                // send accountgameID to detail page
-                // use detail ID to scrape full info
-                // push the info returned to accountGames object;
-            let detailPage = yield this.scraper.fullDetail(accountGames, HowLongToBeatService.FULL_LIST_URL);
-            let fullInfo = HowLongToBeatParser.parseFull(detailPage);
-            return fullInfo;
+            for (const game of accountGames){
+                let detailPage = yield this.scraper.fullDetail(game.id, HowLongToBeatService.FULL_LIST_URL);
+                let fullInfo = HowLongToBeatParser.parseFull(detailPage);
+                games.push(fullInfo);
+            }
+            //
+            return games;
         });
     }
 }
@@ -229,10 +230,12 @@ class HowLongToBeatParser {
     static parseFull(html){
         let results = new Array();
         const $ = cheerio.load(html);
-        let h5Elements = $('h5')
+        let elements = $('h5');
+        elements.each( function (){
+            results.push($(this).text());
+        });
+        return results;
         h5Elements.each(function () {
-            let h5Text = $(this).text();
-            results.push(h5Text);
         });
         return results;
         

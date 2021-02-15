@@ -14,6 +14,11 @@ describe('Integration-Testing HowLongToBeatService', () => {
         assert.isNotNull(entry);
         assert.strictEqual(entry.id, '2224');
         assert.strictEqual(entry.name, 'Dark Souls');
+        assert.isString(entry.imageUrl);
+        assert.isArray(entry.platforms);
+        assert.strictEqual(entry.platforms.length, 4);
+        // backward compatible test
+        assert.strictEqual(entry.playableOn.length, 4);
         assert.isTrue(entry.description.includes('Live Through A Million Deaths & Earn Your Legacy.'))
         assert.isTrue(entry.gameplayMain > 40);
         assert.isTrue(entry.gameplayCompletionist > 100);

@@ -19,14 +19,15 @@ export declare class HowLongToBeatEntry {
     readonly id: string;
     readonly name: string;
     readonly description: string;
-    readonly playableOn: string[];
+    readonly platforms: string[];
     readonly imageUrl: string;
     readonly timeLabels: Array<string[]>;
     readonly gameplayMain: number;
     readonly gameplayMainExtra: number;
     readonly gameplayCompletionist: number;
     readonly similarity: number;
-    constructor(id: string, name: string, description: string, playableOn: string[], imageUrl: string, timeLabels: Array<string[]>, gameplayMain: number, gameplayMainExtra: number, gameplayCompletionist: number, similarity: number);
+    readonly playableOn: string[];
+    constructor(id: string, name: string, description: string, platforms: string[], imageUrl: string, timeLabels: Array<string[]>, gameplayMain: number, gameplayMainExtra: number, gameplayCompletionist: number, similarity: number);
 }
 /**
  * Internal helper class to parse html and create a HowLongToBeatEntry

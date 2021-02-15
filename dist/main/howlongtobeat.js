@@ -43,17 +43,20 @@ exports.HowLongToBeatService = HowLongToBeatService;
  * Encapsulates a game detail
  */
 class HowLongToBeatEntry {
-    constructor(id, name, description, playableOn, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity) {
+    constructor(id, name, description, 
+    /* replaces playableOn */
+    platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.playableOn = playableOn;
+        this.platforms = platforms;
         this.imageUrl = imageUrl;
         this.timeLabels = timeLabels;
         this.gameplayMain = gameplayMain;
         this.gameplayMainExtra = gameplayMainExtra;
         this.gameplayCompletionist = gameplayCompletionist;
         this.similarity = similarity;
+        this.playableOn = platforms;
     }
 }
 exports.HowLongToBeatEntry = HowLongToBeatEntry;
@@ -80,18 +83,20 @@ class HowLongToBeatParser {
         imageUrl = $('.game_image img')[0].attribs.src;
         let liElements = $('.game_times li');
         const gameDescription = $('.in.back_primary.shadow_box p:first-child').text();
-        let playableOn = [];
+        let platforms = [];
         $('.profile_info').each(function () {
             const metaData = $(this).text();
-            if (metaData.includes('Playable On')) {
-                playableOn = metaData
+            if (metaData.includes('Platforms:')) {
+                platforms = metaData
                     .replace(/\n/g, '')
-                    .replace('Playable On:', '')
+                    .replace('Platforms:', '')
                     .split(',')
                     .map(data => data.trim());
                 return;
             }
         });
+        // be backward compatible
+        let playableOn = platforms;
         liElements.each(function () {
             let type = $(this)
                 .find('h5')
@@ -114,7 +119,7 @@ class HowLongToBeatParser {
                 timeLabels.push(['gameplayComplete', type]);
             }
         });
-        return new HowLongToBeatEntry(id, gameName, gameDescription, playableOn, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
+        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
     }
     /**
      * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
@@ -133,7 +138,7 @@ class HowLongToBeatParser {
                 let gameTitleAnchor = $(this).find('a')[0];
                 let gameName = gameTitleAnchor.attribs.title;
                 const gameDescription = '';
-                const playableOn = [];
+                const platforms = [];
                 let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
                 let gameImage = $(gameTitleAnchor).find('img')[0].attribs.src;
                 //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
@@ -176,7 +181,7 @@ class HowLongToBeatParser {
                 catch (e) {
                     console.error(e);
                 }
-                let entry = new HowLongToBeatEntry(detailId, gameName, gameDescription, playableOn, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
+                let entry = new HowLongToBeatEntry(detailId, gameName, gameDescription, platforms, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
                 results.push(entry);
             });
         }

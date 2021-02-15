@@ -57,6 +57,8 @@ describe('Testing HowLongToBeatParser', () => {
       assert.isDefined(detail);
       assert.strictEqual(detail.name, 'God of War III');
       assert.strictEqual(detail.similarity, 1);
+      assert.strictEqual(detail.playableOn.length, 3);
+      assert.strictEqual(detail.platforms.length, 3);
       assert.strictEqual(detail.gameplayCompletionist, 17);
       assert.strictEqual(detail.gameplayMain, 10);
       assert.strictEqual(detail.gameplayMainExtra, 10.5);

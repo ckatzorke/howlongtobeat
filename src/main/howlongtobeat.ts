@@ -38,18 +38,24 @@ export class HowLongToBeatService {
  * Encapsulates a game detail
  */
 export class HowLongToBeatEntry {
+  /* deprecated, since it was also renamed on the website, and platforms is much more suitable */
+  public readonly playableOn: string[];
+
   constructor(
     public readonly id: string,
     public readonly name: string,
     public readonly description: string,
-    public readonly playableOn: string[],
+    /* replaces playableOn */
+    public readonly platforms: string[],
     public readonly imageUrl: string,
     public readonly timeLabels: Array<string[]>,
     public readonly gameplayMain: number,
     public readonly gameplayMainExtra: number,
     public readonly gameplayCompletionist: number,
     public readonly similarity: number
-  ) {}
+  ) {
+    this.playableOn = platforms;
+  }
 }
 
 /**
@@ -80,18 +86,20 @@ export class HowLongToBeatParser {
       '.in.back_primary.shadow_box p:first-child'
     ).text();
 
-    let playableOn = [];
+    let platforms = [];
     $('.profile_info').each(function() {
       const metaData = $(this).text();
-      if (metaData.includes('Playable On')) {
-        playableOn = metaData
+      if (metaData.includes('Platforms:')) {
+        platforms = metaData
           .replace(/\n/g, '')
-          .replace('Playable On:', '')
+          .replace('Platforms:', '')
           .split(',')
           .map(data => data.trim());
         return;
       }
     });
+    // be backward compatible
+    let playableOn = platforms;
 
     liElements.each(function() {
       let type: string = $(this)
@@ -122,7 +130,7 @@ export class HowLongToBeatParser {
       id,
       gameName,
       gameDescription,
-      playableOn,
+      platforms,
       imageUrl,
       timeLabels,
       gameplayMain,
@@ -153,7 +161,7 @@ export class HowLongToBeatParser {
         let gameTitleAnchor = $(this).find('a')[0];
         let gameName: string = gameTitleAnchor.attribs.title;
         const gameDescription = '';
-        const playableOn = [];
+        const platforms = [];
         let detailId: string = gameTitleAnchor.attribs.href.substring(
           gameTitleAnchor.attribs.href.indexOf('?id=') + 4
         );
@@ -212,7 +220,7 @@ export class HowLongToBeatParser {
           detailId,
           gameName,
           gameDescription,
-          playableOn,
+          platforms,
           gameImage,
           timeLabels,
           main,

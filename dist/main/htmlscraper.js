@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require('request');
+const UserAgent = require('user-agents');
 /**
  * Takes care about the http connection and response handling
  */
@@ -16,12 +17,19 @@ class HtmlScraper {
     detailHtml(url) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = new Promise((resolve, reject) => {
-                request.get(url, { followRedirect: false }, (error, response, body) => {
+                request.get(url, {
+                    followRedirect: false,
+                    headers: {
+                        'User-Agent': new UserAgent().toString()
+                    }
+                }, (error, response, body) => {
                     if (error) {
                         reject(error);
                     }
                     else if (response.statusCode !== 200) {
-                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
+                        reject(new Error(`Got non-200 status code from howlongtobeat.com [${response.statusCode}]
+            ${JSON.stringify(response)}
+          `));
                     }
                     else {
                         resolve(body);
@@ -48,13 +56,19 @@ class HtmlScraper {
                         'length_min': '',
                         'length_max': '',
                         'detail': '0'
+                    },
+                    headers: {
+                        'Content-type': 'application/x-www-form-urlencoded',
+                        'User-Agent': new UserAgent().toString()
                     }
                 }, (error, response, body) => {
                     if (error) {
                         reject(error);
                     }
                     else if (response.statusCode !== 200) {
-                        reject(new Error('Got non-200 status code from howlongtobeat.com'));
+                        reject(new Error(`Got non-200 status code from howlongtobeat.com [${response.statusCode}]
+          ${JSON.stringify(response)}
+          `));
                     }
                     else {
                         resolve(body);

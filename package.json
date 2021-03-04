@@ -22,7 +22,8 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "fast-levenshtein": "^2.0.6",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "user-agents": "^1.0.579"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",

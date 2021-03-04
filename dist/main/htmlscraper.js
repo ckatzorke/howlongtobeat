@@ -1,4 +1,9 @@
 "use strict";
+
+//Generate random user agent for post header.
+const UserAgent = require('user-agents');  
+const userAgent = new UserAgent(); 
+
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -48,7 +53,11 @@ class HtmlScraper {
                         'length_min': '',
                         'length_max': '',
                         'detail': '0'
-                    }
+                    },
+                    headers: {
+                        'Content-type': 'application/x-www-form-urlencoded',
+                        'User-Agent': userAgent.toString(),
+                      },
                 }, (error, response, body) => {
                     if (error) {
                         reject(error);
@@ -67,3 +76,4 @@ class HtmlScraper {
 }
 exports.HtmlScraper = HtmlScraper;
 //# sourceMappingURL=htmlscraper.js.map
+

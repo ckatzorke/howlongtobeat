@@ -84,7 +84,7 @@ export class HowLongToBeatParser {
 
     let liElements = $('.game_times li');
     const gameDescription = $(
-      '.in.back_primary.shadow_box p:first-child'
+      '.in.back_primary.shadow_box div.profile_info.large'
     ).text();
 
     let platforms = [];

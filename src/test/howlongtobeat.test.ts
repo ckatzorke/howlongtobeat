@@ -32,6 +32,7 @@ describe('Testing HowLongToBeatParser', () => {
       let results = HowLongToBeatParser.parseSearch(html, 'Persona 4');
       assert.isTrue(results.length === 5);
       assert.strictEqual(results[0].name, 'Persona 4: Golden');
+      assert.strictEqual(results[0].searchTerm, 'Persona 4');
       assert.strictEqual(results[0].similarity, 0.53);
       assert.strictEqual(
         results[0].imageUrl,
@@ -56,6 +57,7 @@ describe('Testing HowLongToBeatParser', () => {
       let detail = HowLongToBeatParser.parseDetails(html, '3978');
       assert.isDefined(detail);
       assert.strictEqual(detail.name, 'God of War III');
+      assert.strictEqual(detail.searchTerm, 'God of War III');
       assert.strictEqual(detail.similarity, 1);
       assert.strictEqual(detail.playableOn.length, 3);
       assert.strictEqual(detail.platforms.length, 3);
@@ -74,6 +76,7 @@ describe('Testing HowLongToBeatParser', () => {
       const detail = HowLongToBeatParser.parseDetails(html, '9224');
       assert.isDefined(detail);
       assert.strictEqual(detail.name, 'Street Fighter');
+      assert.strictEqual(detail.searchTerm, 'Street Fighter');
       assert.strictEqual(detail.similarity, 1);
       //should be one, since 1 hours is the minimum
       assert.strictEqual(detail.gameplayMain, 1);
@@ -93,6 +96,7 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(search.length, 18);
       const streetFighter = search[0];
       assert.strictEqual(streetFighter.name, 'Street Fighter');
+      assert.strictEqual(streetFighter.searchTerm, 'Street Fighter');
       assert.strictEqual(streetFighter.gameplayMain, 1);
       assert.strictEqual(streetFighter.gameplayMainExtra, 1);
       assert.strictEqual(streetFighter.gameplayCompletionist, 3.5);
@@ -115,6 +119,7 @@ describe('Testing HowLongToBeatParser', () => {
       const detail = HowLongToBeatParser.parseDetails(html, '4216');
       assert.isDefined(detail);
       assert.strictEqual(detail.name, 'Guns of Icarus Online');
+      assert.strictEqual(detail.searchTerm, 'Guns of Icarus Online');
       assert.strictEqual(detail.similarity, 1);
       //should be one, since 1 hours is the minimum
       assert.strictEqual(detail.gameplayMain, 0);
@@ -133,6 +138,7 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(search.length, 18);
       const gtaV = search[2];
       assert.strictEqual(gtaV.name, 'Grand Theft Auto V');
+      assert.strictEqual(gtaV.searchTerm, 'Grand Theft Auto');
       assert.strictEqual(gtaV.gameplayMain, 31);
       assert.strictEqual(gtaV.gameplayMainExtra, 46.5);
       assert.strictEqual(gtaV.gameplayCompletionist, 78.5);
@@ -144,6 +150,10 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(
         gtaOnline.name,
         'Grand Theft Auto Online'
+      );
+      assert.strictEqual(
+        gtaOnline.searchTerm,
+        'Grand Theft Auto'
       );
       assert.strictEqual(gtaOnline.gameplayMain, 32.5);
       assert.strictEqual(gtaOnline.gameplayMainExtra, 28);

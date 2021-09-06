@@ -52,7 +52,8 @@ export class HowLongToBeatEntry {
     public readonly gameplayMain: number,
     public readonly gameplayMainExtra: number,
     public readonly gameplayCompletionist: number,
-    public readonly similarity: number
+    public readonly similarity: number,
+    public readonly searchTerm: string
   ) {
     this.playableOn = platforms;
   }
@@ -136,7 +137,8 @@ export class HowLongToBeatParser {
       gameplayMain,
       gameplayMainExtra,
       gameplayComplete,
-      1
+      1,
+      gameName
     );
   }
 
@@ -226,7 +228,8 @@ export class HowLongToBeatParser {
           main,
           mainExtra,
           complete,
-          HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm)
+          HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm),
+          searchTerm
         );
         results.push(entry);
       });

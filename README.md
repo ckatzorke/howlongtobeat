@@ -57,7 +57,8 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 34.5,
     gameplayMainExtra: 61,
     gameplayCompletionist: 93.5,
-    similarity: 1
+    similarity: 1,
+    searchTerm: 'Nioh'
     },
     {
     id: '50419',
@@ -67,7 +68,8 @@ hltbService.search('Nioh').then(result => console.log(result));
     gameplayMain: 42,
     gameplayMainExtra: 84,
     gameplayCompletionist: 97,
-    similarity: 0.18
+    similarity: 0.18,
+    searchTerm: 'Nioh'
     },
     ...
 ]
@@ -95,7 +97,8 @@ The `search()` method will return a `Promise` with an `HowLongToBeatEntry`. If t
   gameplayMain: 34.5,
   gameplayMainExtra: 61,
   gameplayCompletionist: 93.5,
-  similarity: 1
+  similarity: 1,
+  searchTerm: 'Nioh'
 }
 ```
 

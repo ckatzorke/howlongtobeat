@@ -1,6 +1,6 @@
 {
   "name": "howlongtobeat",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "main": "dist/main/howlongtobeat.js",
   "author": "Christian Katzorke <ckatzorke@gmail.com>",
   "license": "WTFPL",

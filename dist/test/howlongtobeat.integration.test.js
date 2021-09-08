@@ -11,6 +11,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
                 assert.isNotNull(entry);
                 assert.strictEqual(entry.id, '2224');
                 assert.strictEqual(entry.name, 'Dark Souls');
+                assert.strictEqual(entry.searchTerm, 'Dark Souls');
                 assert.isString(entry.imageUrl);
                 assert.isArray(entry.platforms);
                 assert.strictEqual(entry.platforms.length, 4);

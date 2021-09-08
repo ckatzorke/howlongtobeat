@@ -45,7 +45,7 @@ exports.HowLongToBeatService = HowLongToBeatService;
 class HowLongToBeatEntry {
     constructor(id, name, description, 
     /* replaces playableOn */
-    platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity) {
+    platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity, searchTerm) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -56,6 +56,7 @@ class HowLongToBeatEntry {
         this.gameplayMainExtra = gameplayMainExtra;
         this.gameplayCompletionist = gameplayCompletionist;
         this.similarity = similarity;
+        this.searchTerm = searchTerm;
         this.playableOn = platforms;
     }
 }
@@ -82,7 +83,7 @@ class HowLongToBeatParser {
         gameName = $('.profile_header')[0].children[0].data.trim();
         imageUrl = $('.game_image img')[0].attribs.src;
         let liElements = $('.game_times li');
-        const gameDescription = $('.in.back_primary.shadow_box p:first-child').text();
+        const gameDescription = $('.in.back_primary.shadow_box div.profile_info.large').text();
         let platforms = [];
         $('.profile_info').each(function () {
             const metaData = $(this).text();
@@ -119,7 +120,7 @@ class HowLongToBeatParser {
                 timeLabels.push(['gameplayComplete', type]);
             }
         });
-        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1);
+        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1, gameName);
     }
     /**
      * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
@@ -181,7 +182,7 @@ class HowLongToBeatParser {
                 catch (e) {
                     console.error(e);
                 }
-                let entry = new HowLongToBeatEntry(detailId, gameName, gameDescription, platforms, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm));
+                let entry = new HowLongToBeatEntry(detailId, gameName, gameDescription, platforms, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm), searchTerm);
                 results.push(entry);
             });
         }

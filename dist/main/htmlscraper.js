@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const request = require('request');
+const axios = require('axios');
 const UserAgent = require('user-agents');
 /**
  * Takes care about the http connection and response handling
@@ -16,66 +16,64 @@ const UserAgent = require('user-agents');
 class HtmlScraper {
     detailHtml(url) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = new Promise((resolve, reject) => {
-                request.get(url, {
+            try {
+                let result = yield axios.get(url, {
                     followRedirect: false,
                     headers: {
                         'User-Agent': new UserAgent().toString()
-                    }
-                }, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    else if (response.statusCode !== 200) {
-                        reject(new Error(`Got non-200 status code from howlongtobeat.com [${response.statusCode}]
-            ${JSON.stringify(response)}
-          `));
-                    }
-                    else {
-                        resolve(body);
-                    }
-                });
-            });
-            return result;
+                    },
+                    timeout: 20000,
+                }).catch(e => { throw e; });
+                return result.data;
+            }
+            catch (error) {
+                if (error) {
+                    throw new Error(error);
+                }
+                else if (error.response.status !== 200) {
+                    throw new Error(`Got non-200 status code from howlongtobeat.com [${error.response.status}]
+          ${JSON.stringify(error.response)}
+        `);
+                }
+            }
         });
     }
     search(query, url) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = new Promise((resolve, reject) => {
-                request.post(url, {
+            // Use built-in javascript URLSearchParams as a drop-in replacement to create axios.post required data param
+            let form = new URLSearchParams();
+            form.append('queryString', query);
+            form.append('t', 'games');
+            form.append('sorthead', 'popular');
+            form.append('sortd', 'Normal Order');
+            form.append('plat', '');
+            form.append('length_type', 'main');
+            form.append('length_min', '');
+            form.append('length_max', '');
+            form.append('detail', '0');
+            try {
+                let result = yield axios.post(url, form, {
                     qs: {
                         page: 1
-                    },
-                    form: {
-                        'queryString': query,
-                        't': 'games',
-                        'sorthead': 'popular',
-                        'sortd': 'Normal Order',
-                        'plat': '',
-                        'length_type': 'main',
-                        'length_min': '',
-                        'length_max': '',
-                        'detail': '0'
                     },
                     headers: {
                         'Content-type': 'application/x-www-form-urlencoded',
                         'User-Agent': new UserAgent().toString()
-                    }
-                }, (error, response, body) => {
-                    if (error) {
-                        reject(error);
-                    }
-                    else if (response.statusCode !== 200) {
-                        reject(new Error(`Got non-200 status code from howlongtobeat.com [${response.statusCode}]
-          ${JSON.stringify(response)}
-          `));
-                    }
-                    else {
-                        resolve(body);
-                    }
+                    },
+                    timeout: 20000,
                 });
-            });
-            return result;
+                return result.data;
+            }
+            catch (error) {
+                if (error) {
+                    throw new Error(error);
+                }
+                else if (error.response.status !== 200) {
+                    throw new Error(`Got non-200 status code from howlongtobeat.com [${error.response.status}]
+          ${JSON.stringify(error.response)}
+        `);
+                }
+            }
         });
     }
 }

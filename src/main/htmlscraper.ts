@@ -15,7 +15,7 @@ export class HtmlScraper {
             'User-Agent': new UserAgent().toString()
           },
           timeout: 20000,
-      });
+      }).catch(e => { throw e; });
       return result.data;
     } catch (error) {
       if (error) {

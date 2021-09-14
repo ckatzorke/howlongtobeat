@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios = require('axios');
-const request = require('request');
 const UserAgent = require('user-agents');
 /**
  * Takes care about the http connection and response handling
@@ -24,7 +23,7 @@ class HtmlScraper {
                         'User-Agent': new UserAgent().toString()
                     },
                     timeout: 20000,
-                });
+                }).catch(e => { throw e; });
                 return result.data;
             }
             catch (error) {
@@ -34,7 +33,7 @@ class HtmlScraper {
                 else if (error.response.status !== 200) {
                     throw new Error(`Got non-200 status code from howlongtobeat.com [${error.response.status}]
           ${JSON.stringify(error.response)}
-	`);
+        `);
                 }
             }
         });
@@ -72,7 +71,7 @@ class HtmlScraper {
                 else if (error.response.status !== 200) {
                     throw new Error(`Got non-200 status code from howlongtobeat.com [${error.response.status}]
           ${JSON.stringify(error.response)}
-	`);
+        `);
                 }
             }
         });

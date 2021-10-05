@@ -18,6 +18,7 @@ export declare class HowLongToBeatService {
 export declare class HowLongToBeatEntry {
     readonly id: string;
     readonly name: string;
+    readonly nameComplete: string;
     readonly description: string;
     readonly platforms: string[];
     readonly imageUrl: string;
@@ -28,7 +29,7 @@ export declare class HowLongToBeatEntry {
     readonly similarity: number;
     readonly searchTerm: string;
     readonly playableOn: string[];
-    constructor(id: string, name: string, description: string, platforms: string[], imageUrl: string, timeLabels: Array<string[]>, gameplayMain: number, gameplayMainExtra: number, gameplayCompletionist: number, similarity: number, searchTerm: string);
+    constructor(id: string, name: string, nameComplete: string, description: string, platforms: string[], imageUrl: string, timeLabels: Array<string[]>, gameplayMain: number, gameplayMainExtra: number, gameplayCompletionist: number, similarity: number, searchTerm: string);
 }
 /**
  * Internal helper class to parse html and create a HowLongToBeatEntry

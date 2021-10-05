@@ -120,5 +120,38 @@ describe('Testing HowLongToBeatParser', () => {
             expect(gtaOnline.timeLabels).to.eql(gtaOnlineTimeLabels);
         });
     });
+    describe('Test for getting game name with year on it.', () => {
+        it('should have year of the game God of War in gameNameComplete', () => {
+            const html = fs.readFileSync('src/test/resources/search_god_of_war.html', 'utf-8');
+            const search = howlongtobeat_1.HowLongToBeatParser.parseSearch(html, 'God of War');
+            assert.isDefined(search);
+            assert.strictEqual(search.length, 15);
+            const god2018 = search[0];
+            assert.strictEqual(god2018.name, 'God of War');
+            expect(god2018.nameComplete).to.eql('God of War (2018)');
+            const god2015 = search[1];
+            assert.strictEqual(god2015.name, 'God of War');
+            expect(god2015.nameComplete).to.eql('God of War (2005)');
+        });
+        it('should not have year of the game God of War in gameName', () => {
+            const html = fs.readFileSync('src/test/resources/search_god_of_war.html', 'utf-8');
+            const search = howlongtobeat_1.HowLongToBeatParser.parseSearch(html, 'God of War');
+            assert.isDefined(search);
+            assert.strictEqual(search.length, 15);
+            const god2018 = search[0];
+            expect(god2018.name).to.eql('God of War');
+            const god2015 = search[1];
+            expect(god2015.name).to.eql('God of War');
+        });
+        it('should not have year of the game Grand Theft Auto in gameNameComplete', () => {
+            const html = fs.readFileSync('src/test/resources/search_grand_theft_auto.html', 'utf-8');
+            const search = howlongtobeat_1.HowLongToBeatParser.parseSearch(html, 'Grand Theft Auto');
+            assert.isDefined(search);
+            assert.strictEqual(search.length, 18);
+            const gtaV = search[2];
+            assert.strictEqual(gtaV.name, 'Grand Theft Auto V');
+            assert.strictEqual(gtaV.nameComplete, 'Grand Theft Auto V');
+        });
+    });
 });
 //# sourceMappingURL=howlongtobeat.test.js.map

@@ -43,11 +43,12 @@ exports.HowLongToBeatService = HowLongToBeatService;
  * Encapsulates a game detail
  */
 class HowLongToBeatEntry {
-    constructor(id, name, description, 
+    constructor(id, name, nameComplete, description, 
     /* replaces playableOn */
     platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, similarity, searchTerm) {
         this.id = id;
         this.name = name;
+        this.nameComplete = nameComplete;
         this.description = description;
         this.platforms = platforms;
         this.imageUrl = imageUrl;
@@ -120,7 +121,7 @@ class HowLongToBeatParser {
                 timeLabels.push(['gameplayComplete', type]);
             }
         });
-        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1, gameName);
+        return new HowLongToBeatEntry(id, gameName, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1, gameName);
     }
     /**
      * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
@@ -137,7 +138,14 @@ class HowLongToBeatParser {
             let liElements = $('li');
             liElements.each(function () {
                 let gameTitleAnchor = $(this).find('a')[0];
+                let gameYear = undefined;
+                let gameTag = $(this).find('h3')[0].children.find((ele) => ele.name == 'strong');
+                if (gameTag) {
+                    gameYear = gameTag.children[0].data;
+                }
+                ;
                 let gameName = gameTitleAnchor.attribs.title;
+                let gameCompleteName = gameYear ? `${gameName} ${gameYear}` : gameName;
                 const gameDescription = '';
                 const platforms = [];
                 let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);
@@ -182,7 +190,7 @@ class HowLongToBeatParser {
                 catch (e) {
                     console.error(e);
                 }
-                let entry = new HowLongToBeatEntry(detailId, gameName, gameDescription, platforms, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm), searchTerm);
+                let entry = new HowLongToBeatEntry(detailId, gameName, gameCompleteName, gameDescription, platforms, gameImage, timeLabels, main, mainExtra, complete, HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm), searchTerm);
                 results.push(entry);
             });
         }

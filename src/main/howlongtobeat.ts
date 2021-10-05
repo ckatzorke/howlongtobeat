@@ -44,6 +44,7 @@ export class HowLongToBeatEntry {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public readonly nameComplete: string,
     public readonly description: string,
     /* replaces playableOn */
     public readonly platforms: string[],
@@ -130,6 +131,7 @@ export class HowLongToBeatParser {
     return new HowLongToBeatEntry(
       id,
       gameName,
+      gameName,
       gameDescription,
       platforms,
       imageUrl,
@@ -161,7 +163,13 @@ export class HowLongToBeatParser {
       let liElements = $('li');
       liElements.each(function() {
         let gameTitleAnchor = $(this).find('a')[0];
+        let gameYear = undefined;
+        let gameTag = $(this).find('h3')[0].children.find((ele) => ele.name == 'strong')
+        if (gameTag) {
+            gameYear = gameTag.children[0].data;
+        };
         let gameName: string = gameTitleAnchor.attribs.title;
+        let gameCompleteName = gameYear ? `${gameName} ${gameYear}`: gameName;
         const gameDescription = '';
         const platforms = [];
         let detailId: string = gameTitleAnchor.attribs.href.substring(
@@ -221,6 +229,7 @@ export class HowLongToBeatParser {
         let entry = new HowLongToBeatEntry(
           detailId,
           gameName,
+          gameCompleteName,
           gameDescription,
           platforms,
           gameImage,

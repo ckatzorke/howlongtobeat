@@ -41,7 +41,7 @@ let hltbService = new HowLongToBeatService();
 #### Searching for a game
 
 ```javascript
-hltbService.search('Nioh').then(result => console.log(result));
+hltbService.search('God of War').then(result => console.log(result));
 ```
 
 `search()` will return a `Promise` with an `Array<HowLongToBeatEntry>`
@@ -50,28 +50,36 @@ hltbService.search('Nioh').then(result => console.log(result));
 
 ```javascript
 [ {
-    id: '36936',
-    name: 'Nioh',
-    imageUrl: 'https://howlongtobeat.com/gameimages/36936_Nioh.jpg',
+    id: "38050",
+    name: "God of War",
+    nameComplete: "God of War (2018)",
+    description: "",
+    platforms: [],
+    imageUrl: "/games/38050_God_of_War.jpg",
     timeLabels: [ [Array], [Array], [Array] ],
-    gameplayMain: 34.5,
-    gameplayMainExtra: 61,
-    gameplayCompletionist: 93.5,
+    gameplayMain: 21,
+    gameplayMainExtra: 32,
+    gameplayCompletionist: 51.5,
     similarity: 1,
-    searchTerm: 'Nioh'
-    },
-    {
-    id: '50419',
-    name: 'Nioh: Complete Edition',
-    imageUrl: 'https://howlongtobeat.com/gameimages/50419_Nioh_Complete_Edition.jpg',
+    searchTerm: "god of war",
+    playableOn: []
+  },
+  {
+    id: "3974",
+    name: "God of War",
+    nameComplete: "God of War (2005)",
+    description: "",
+    platforms: [],
+    imageUrl: "/games/252px-Gowbox.jpg",
     timeLabels: [ [Array], [Array], [Array] ],
-    gameplayMain: 42,
-    gameplayMainExtra: 84,
-    gameplayCompletionist: 97,
-    similarity: 0.18,
-    searchTerm: 'Nioh'
-    },
-    ...
+    gameplayMain: 9,
+    gameplayMainExtra: 9.5,
+    gameplayCompletionist: 12.5,
+    similarity: 1,
+    searchTerm: "god of war",
+    playableOn: []
+  },
+  ...
 ]
 ```
 

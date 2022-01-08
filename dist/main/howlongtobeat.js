@@ -137,7 +137,7 @@ class HowLongToBeatParser {
             let liElements = $('li');
             liElements.each(function () {
                 let gameTitleAnchor = $(this).find('a')[0];
-                let gameName = $(this).find('a')[1].text();
+                let gameName = $(this).find('a')[1].text;
                 const gameDescription = '';
                 const platforms = [];
                 let detailId = gameTitleAnchor.attribs.href.substring(gameTitleAnchor.attribs.href.indexOf('?id=') + 4);

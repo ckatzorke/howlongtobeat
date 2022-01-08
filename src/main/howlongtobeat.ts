@@ -160,7 +160,7 @@ export class HowLongToBeatParser {
     if ($('h3').length > 0) {
       let liElements = $('li');
       liElements.each(function() {
-        let gameTitleAnchor = $(this).find('a')[0];
+        let gameTitleAnchor = $(this).find('a')[0];     
         let gameName: string = $(this).find('a')[1].children[0].data;
         const gameDescription = '';
         const platforms = [];

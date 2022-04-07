@@ -16,18 +16,20 @@ export class HowLongToBeatService {
    * @param gameId the hltb internal gameid
    * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
    */
-  async detail(gameId: string): Promise<HowLongToBeatEntry> {
+  async detail(gameId: string, signal?: AbortSignal): Promise<HowLongToBeatEntry> {
     let detailPage = await this.scraper.detailHtml(
-      `${HowLongToBeatService.DETAIL_URL}${gameId}`
+      `${HowLongToBeatService.DETAIL_URL}${gameId}`,
+      signal
     );
     let entry = HowLongToBeatParser.parseDetails(detailPage, gameId);
     return entry;
   }
 
-  async search(query: string): Promise<Array<HowLongToBeatEntry>> {
+  async search(query: string, signal?: AbortSignal): Promise<Array<HowLongToBeatEntry>> {
     let searchPage = await this.scraper.search(
       query,
-      HowLongToBeatService.SEARCH_URL
+      HowLongToBeatService.SEARCH_URL,
+      signal
     );
     let result = HowLongToBeatParser.parseSearch(searchPage, query);
     return result;

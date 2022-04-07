@@ -9,8 +9,8 @@ export declare class HowLongToBeatService {
      * @param gameId the hltb internal gameid
      * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
      */
-    detail(gameId: string): Promise<HowLongToBeatEntry>;
-    search(query: string): Promise<Array<HowLongToBeatEntry>>;
+    detail(gameId: string, signal?: AbortSignal): Promise<HowLongToBeatEntry>;
+    search(query: string, signal?: AbortSignal): Promise<Array<HowLongToBeatEntry>>;
 }
 /**
  * Encapsulates a game detail

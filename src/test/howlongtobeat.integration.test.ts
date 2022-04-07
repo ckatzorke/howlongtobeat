@@ -26,6 +26,16 @@ describe('Integration-Testing HowLongToBeatService', () => {
       });
     });
 
+    it('should abort loading entry for 2224 (Dark Souls)', () => {
+      const abortController = new AbortController()
+      abortController.abort()
+      return new HowLongToBeatService().detail('2224', abortController.signal).then(() => {
+        assert.fail()
+      }).catch(e => {
+        assert.include(e.message.toLowerCase(), 'cancel')
+      })
+    });
+
     it('should fail to load entry for 123 (404)', () => {
       return assert.isRejected(new HowLongToBeatService().detail('123'));
     });
@@ -49,6 +59,16 @@ describe('Integration-Testing HowLongToBeatService', () => {
         assert.isTrue(result[0].gameplayMain > 30);
         assert.isTrue(result[0].gameplayCompletionist > 80);
       });
+    });
+
+    it('should abort searching for dark souls III', () => {
+      const abortController = new AbortController()
+      abortController.abort()
+      return new HowLongToBeatService().search('dark souls III', abortController.signal).then(() => {
+        assert.fail()
+      }).catch(e => {
+        assert.include(e.message.toLowerCase(), 'cancel')
+      })
     });
 
     it('should have 1 search results with 100% similarity when searching for Persona 4: Golden', () => {

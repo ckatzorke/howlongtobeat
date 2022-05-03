@@ -6,7 +6,7 @@ const UserAgent: any = require('user-agents');
  */
 export class HtmlScraper {
 
-  async detailHtml(url: string): Promise<string> {
+  async detailHtml(url: string, signal?: AbortSignal): Promise<string> {
     try {
       let result = 
       	await axios.get(url, {
@@ -15,6 +15,7 @@ export class HtmlScraper {
             'User-Agent': new UserAgent().toString()
           },
           timeout: 20000,
+          signal,
       }).catch(e => { throw e; });
       return result.data;
     } catch (error) {
@@ -28,7 +29,7 @@ export class HtmlScraper {
     }
   }
 
-  async search(query: string, url: string): Promise<string> {
+  async search(query: string, url: string, signal?: AbortSignal): Promise<string> {
     // Use built-in javascript URLSearchParams as a drop-in replacement to create axios.post required data param
     let form = new URLSearchParams();
     form.append('queryString', query);
@@ -52,6 +53,7 @@ export class HtmlScraper {
             'User-Agent': new UserAgent().toString()
           },
           timeout: 20000,
+          signal,
       });
       return result.data;
     } catch (error) {

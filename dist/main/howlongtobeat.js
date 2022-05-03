@@ -20,16 +20,16 @@ class HowLongToBeatService {
      * @param gameId the hltb internal gameid
      * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
      */
-    detail(gameId) {
+    detail(gameId, signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            let detailPage = yield this.scraper.detailHtml(`${HowLongToBeatService.DETAIL_URL}${gameId}`);
+            let detailPage = yield this.scraper.detailHtml(`${HowLongToBeatService.DETAIL_URL}${gameId}`, signal);
             let entry = HowLongToBeatParser.parseDetails(detailPage, gameId);
             return entry;
         });
     }
-    search(query) {
+    search(query, signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            let searchPage = yield this.scraper.search(query, HowLongToBeatService.SEARCH_URL);
+            let searchPage = yield this.scraper.search(query, HowLongToBeatService.SEARCH_URL, signal);
             let result = HowLongToBeatParser.parseSearch(searchPage, query);
             return result;
         });

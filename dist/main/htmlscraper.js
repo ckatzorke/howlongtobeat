@@ -14,7 +14,7 @@ const UserAgent = require('user-agents');
  * Takes care about the http connection and response handling
  */
 class HtmlScraper {
-    detailHtml(url) {
+    detailHtml(url, signal) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let result = yield axios.get(url, {
@@ -23,6 +23,7 @@ class HtmlScraper {
                         'User-Agent': new UserAgent().toString()
                     },
                     timeout: 20000,
+                    signal,
                 }).catch(e => { throw e; });
                 return result.data;
             }
@@ -38,7 +39,7 @@ class HtmlScraper {
             }
         });
     }
-    search(query, url) {
+    search(query, url, signal) {
         return __awaiter(this, void 0, void 0, function* () {
             // Use built-in javascript URLSearchParams as a drop-in replacement to create axios.post required data param
             let form = new URLSearchParams();
@@ -61,6 +62,7 @@ class HtmlScraper {
                         'User-Agent': new UserAgent().toString()
                     },
                     timeout: 20000,
+                    signal,
                 });
                 return result.data;
             }

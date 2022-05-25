@@ -20,7 +20,8 @@ class HtmlScraper {
                 let result = yield axios.get(url, {
                     followRedirect: false,
                     headers: {
-                        'User-Agent': new UserAgent().toString()
+                        'User-Agent': new UserAgent().toString(),
+                        'referer': 'https://howlongtobeat.com/'
                     },
                     timeout: 20000,
                     signal,
@@ -59,7 +60,9 @@ class HtmlScraper {
                     },
                     headers: {
                         'Content-type': 'application/x-www-form-urlencoded',
-                        'User-Agent': new UserAgent().toString()
+                        'User-Agent': new UserAgent().toString(),
+                        'origin': 'https://howlongtobeat.com',
+                        'referer': 'https://howlongtobeat.com/'
                     },
                     timeout: 20000,
                     signal,

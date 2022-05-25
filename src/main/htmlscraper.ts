@@ -12,7 +12,9 @@ export class HtmlScraper {
       	await axios.get(url, {
           followRedirect: false,
           headers: { 
-            'User-Agent': new UserAgent().toString()
+            'User-Agent': new UserAgent().toString(),
+            'origin': 'https://howlongtobeat.com',
+            'referer': 'https://howlongtobeat.com'
           },
           timeout: 20000,
           signal,
@@ -41,6 +43,10 @@ export class HtmlScraper {
     form.append('length_min', '');
     form.append('length_max', '');
     form.append('detail', '0');
+    form.append('v', '');
+    form.append('f', '');
+    form.append('g', '');
+    form.append('randomize', '0');
     
     try {
       let result = 
@@ -50,7 +56,9 @@ export class HtmlScraper {
           },
           headers: {
             'Content-type': 'application/x-www-form-urlencoded',
-            'User-Agent': new UserAgent().toString()
+            'User-Agent': new UserAgent().toString(),
+            'origin': 'https://howlongtobeat.com',
+            'referer': 'https://howlongtobeat.com'
           },
           timeout: 20000,
           signal,

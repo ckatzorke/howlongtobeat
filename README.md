@@ -81,7 +81,7 @@ hltbService.search('Nioh').then(result => console.log(result));
 hltbService.detail('36936').then(result => console.log(result)).catch(e => console.error(e));
 ```
 
-The `search()` method will return a `Promise` with an `HowLongToBeatEntry`. If the id is not known, an error is thrown, you should catch the Promise anyway.
+The `detail()` method will return a `Promise` with an `HowLongToBeatEntry`. If the id is not known, an error is thrown, you should catch the Promise anyway.
 
 * Detail response example:
 

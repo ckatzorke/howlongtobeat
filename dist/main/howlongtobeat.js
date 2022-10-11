@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const cheerio = require('cheerio');
 const levenshtein = require('fast-levenshtein');
-const htmlscraper_1 = require("./htmlscraper");
+const hltbsearch_1 = require("./hltbsearch");
 class HowLongToBeatService {
     constructor() {
-        this.scraper = new htmlscraper_1.HtmlScraper();
+        this.hltb = new hltbsearch_1.HltbSearch();
     }
     /**
      * Get HowLongToBeatEntry from game id, by fetching the detail page like https://howlongtobeat.com/game.php?id=6974 and parsing it.
@@ -22,22 +22,21 @@ class HowLongToBeatService {
      */
     detail(gameId, signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            let detailPage = yield this.scraper.detailHtml(`${HowLongToBeatService.DETAIL_URL}${gameId}`, signal);
+            let detailPage = yield this.hltb
+                .detailHtml(gameId, signal);
             let entry = HowLongToBeatParser.parseDetails(detailPage, gameId);
             return entry;
         });
     }
     search(query, signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            let searchPage = yield this.scraper.search(query, HowLongToBeatService.SEARCH_URL, signal);
-            let result = HowLongToBeatParser.parseSearch(searchPage, query);
-            return result;
+            let searchTerms = query.split(' ');
+            let searchPage = yield this.hltb
+                .search(searchTerms, signal);
+            return new Array();
         });
     }
 }
-HowLongToBeatService.BASE_URL = 'https://howlongtobeat.com/';
-HowLongToBeatService.DETAIL_URL = `${HowLongToBeatService.BASE_URL}game?id=`;
-HowLongToBeatService.SEARCH_URL = `${HowLongToBeatService.BASE_URL}search_results`;
 exports.HowLongToBeatService = HowLongToBeatService;
 /**
  * Encapsulates a game detail

@@ -1,8 +1,5 @@
 export declare class HowLongToBeatService {
-    private scraper;
-    static BASE_URL: string;
-    static DETAIL_URL: string;
-    static SEARCH_URL: string;
+    private hltb;
     constructor();
     /**
      * Get HowLongToBeatEntry from game id, by fetching the detail page like https://howlongtobeat.com/game.php?id=6974 and parsing it.

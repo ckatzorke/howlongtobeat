@@ -1,14 +1,11 @@
 const cheerio = require('cheerio');
 const levenshtein = require('fast-levenshtein');
 
-import { HtmlScraper } from './htmlscraper';
+import { HltbSearch } from './hltbsearch';
 
 export class HowLongToBeatService {
-  private scraper: HtmlScraper = new HtmlScraper();
-  public static BASE_URL: string = 'https://howlongtobeat.com/';
-  public static DETAIL_URL: string = `${HowLongToBeatService.BASE_URL}game?id=`;
-  public static SEARCH_URL: string = `${HowLongToBeatService.BASE_URL}search_results`;
-
+  private hltb: HltbSearch = new HltbSearch();
+  
   constructor() {}
 
   /**
@@ -17,8 +14,9 @@ export class HowLongToBeatService {
    * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
    */
   async detail(gameId: string, signal?: AbortSignal): Promise<HowLongToBeatEntry> {
-    let detailPage = await this.scraper.detailHtml(
-      `${HowLongToBeatService.DETAIL_URL}${gameId}`,
+    let detailPage = await this.hltb
+.detailHtml(
+      gameId,
       signal
     );
     let entry = HowLongToBeatParser.parseDetails(detailPage, gameId);
@@ -26,13 +24,12 @@ export class HowLongToBeatService {
   }
 
   async search(query: string, signal?: AbortSignal): Promise<Array<HowLongToBeatEntry>> {
-    let searchPage = await this.scraper.search(
-      query,
-      HowLongToBeatService.SEARCH_URL,
+    let searchTerms = query.split(' ');
+    let searchPage = await this.hltb.search(
+      searchTerms,
       signal
     );
-    let result = HowLongToBeatParser.parseSearch(searchPage, query);
-    return result;
+    return new Array<HowLongToBeatEntry>();
   }
 }
 

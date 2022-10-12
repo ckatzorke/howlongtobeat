@@ -1,0 +1,35 @@
+{
+    "searchType": "games",
+    "searchTerms": [
+        "return",
+        "to",
+        "monkey",
+        "island"
+    ],
+    "searchPage": 1,
+    "size": 20,
+    "searchOptions": {
+        "games": {
+            "userId": 0,
+            "platform": "",
+            "sortCategory": "popular",
+            "rangeCategory": "main",
+            "rangeTime": {
+                "min": 0,
+                "max": 0
+            },
+            "gameplay": {
+                "perspective": "",
+                "flow": "",
+                "genre": ""
+            },
+            "modifier": ""
+        },
+        "users": {
+            "sortCategory": "postcount"
+        },
+        "filter": "",
+        "sort": 0,
+        "randomizer": 0
+    }
+}

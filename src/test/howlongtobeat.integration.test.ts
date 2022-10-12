@@ -10,7 +10,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
 
     it('should load entry for 2224 (Dark Souls)', () => {
       return new HowLongToBeatService().detail('2224').then((entry) => {
-        console.log(entry);
+        // console.log(entry);
         assert.isNotNull(entry);
         assert.strictEqual(entry.id, '2224');
         assert.strictEqual(entry.name, 'Dark Souls');
@@ -81,7 +81,7 @@ describe('Integration-Testing HowLongToBeatService', () => {
 
     it('Entries without any time settings (e.g. "Surge") should have a zero hour result', () => {
       return new HowLongToBeatService().search('Surge').then((result) => {
-        console.log(result);
+        // console.log(result);
         assert.isNotNull(result);
         assert.isTrue(result.length > 1);
         assert.strictEqual(result[0].gameplayMain, 0);

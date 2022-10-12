@@ -36,7 +36,7 @@ class HowLongToBeatService {
             for (const resultEntry of search.data) {
                 hltbEntries.push(new HowLongToBeatEntry('' + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
                 resultEntry.game_name, '', // no description
-                resultEntry.profile_platform ? resultEntry.profile_platform.split(',') : [], resultEntry.game_image, null, Math.round(resultEntry.comp_main / 3600), Math.round(resultEntry.comp_plus / 3600), Math.round(resultEntry.comp_100 / 3600), HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query), query));
+                resultEntry.profile_platform ? resultEntry.profile_platform.split(',') : [], hltbsearch_1.HltbSearch.IMAGE_URL + resultEntry.game_image, null, Math.round(resultEntry.comp_main / 3600), Math.round(resultEntry.comp_plus / 3600), Math.round(resultEntry.comp_100 / 3600), HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query), query));
             }
             return hltbEntries;
         });

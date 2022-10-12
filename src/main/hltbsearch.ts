@@ -68,25 +68,22 @@ export class HltbSearch {
     }
   }
 
-  async search(query: Array<string>, signal?: AbortSignal): Promise<string> {
+  async search(query: Array<string>, signal?: AbortSignal): Promise<any> {
     // Use built-in javascript URLSearchParams as a drop-in replacement to create axios.post required data param
     let search = { ...this.payload };
     search.searchTerms = query;
     try {
       let result =
-        await axios.post(HltbSearch.SEARCH_URL, {
-          data: search,
+        await axios.post(HltbSearch.SEARCH_URL, search, {
           headers: {
-            'Content-type': 'application/json',
-            'User-Agent': new UserAgent().toString(),
+            'content-type': 'application/json',
             'origin': 'https://howlongtobeat.com/',
             'referer': 'https://howlongtobeat.com/'
           },
           timeout: 20000,
           signal,
         });
-      console.log('Search', search);
-      console.log('Result', result);
+      // console.log('Result', JSON.stringify(result.data));
       return result.data;
     } catch (error) {
       if (error) {

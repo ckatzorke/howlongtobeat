@@ -7,5 +7,5 @@ export declare class HltbSearch {
     static SEARCH_URL: string;
     payload: any;
     detailHtml(gameId: string, signal?: AbortSignal): Promise<string>;
-    search(query: Array<string>, signal?: AbortSignal): Promise<string>;
+    search(query: Array<string>, signal?: AbortSignal): Promise<any>;
 }

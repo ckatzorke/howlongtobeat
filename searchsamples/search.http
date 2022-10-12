@@ -1,6 +1,7 @@
 POST https://www.howlongtobeat.com/api/search HTTP/1.1
 content-type: application/json
-Referer: https://howlongtobeat.com/
+referer: https://howlongtobeat.com/
+origin: https://howlongtobeat.com/
 
 {
     "searchType": "games",

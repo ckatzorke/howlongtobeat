@@ -79,19 +79,16 @@ class HltbSearch {
             let search = Object.assign({}, this.payload);
             search.searchTerms = query;
             try {
-                let result = yield axios.post(HltbSearch.SEARCH_URL, {
-                    data: search,
+                let result = yield axios.post(HltbSearch.SEARCH_URL, search, {
                     headers: {
-                        'Content-type': 'application/json',
-                        'User-Agent': new UserAgent().toString(),
+                        'content-type': 'application/json',
                         'origin': 'https://howlongtobeat.com/',
                         'referer': 'https://howlongtobeat.com/'
                     },
                     timeout: 20000,
                     signal,
                 });
-                console.log('Search', search);
-                console.log('Result', result);
+                // console.log('Result', JSON.stringify(result.data));
                 return result.data;
             }
             catch (error) {

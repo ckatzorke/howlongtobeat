@@ -5,8 +5,8 @@ import { HltbSearch } from './hltbsearch';
 
 export class HowLongToBeatService {
   private hltb: HltbSearch = new HltbSearch();
-  
-  constructor() {}
+
+  constructor() { }
 
   /**
    * Get HowLongToBeatEntry from game id, by fetching the detail page like https://howlongtobeat.com/game.php?id=6974 and parsing it.
@@ -14,8 +14,7 @@ export class HowLongToBeatService {
    * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
    */
   async detail(gameId: string, signal?: AbortSignal): Promise<HowLongToBeatEntry> {
-    let detailPage = await this.hltb
-.detailHtml(
+    let detailPage = await this.hltb.detailHtml(
       gameId,
       signal
     );
@@ -25,11 +24,53 @@ export class HowLongToBeatService {
 
   async search(query: string, signal?: AbortSignal): Promise<Array<HowLongToBeatEntry>> {
     let searchTerms = query.split(' ');
-    let searchPage = await this.hltb.search(
+    let search = await this.hltb.search(
       searchTerms,
       signal
     );
-    return new Array<HowLongToBeatEntry>();
+    console.log(`Found ${search.count} results`);
+    let hltbEntries = new Array<HowLongToBeatEntry>();
+    for (const resultEntry of search.data) {
+      hltbEntries.push(new HowLongToBeatEntry(
+        '' + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
+        resultEntry.game_name,
+        '', // no description
+        resultEntry.profile_platform ? resultEntry.profile_platform.split(',') : [],
+        resultEntry.game_image,
+        null,
+        Math.round(resultEntry.comp_main / 3600),
+        Math.round(resultEntry.comp_plus / 3600),
+        Math.round(resultEntry.comp_100 / 3600),
+        HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query),
+        query
+      ));
+    }
+    return hltbEntries;
+  }
+
+  /**
+   * Calculates the similarty of two strings based on the levenshtein distance in relation to the string lengths.
+   * It is used to see how similar the search term is to the game name. This, of course has only relevance if the search term is really specific and matches the game name as good as possible.
+   * When using a proper search index, this would be the ranking/rating and much more sophisticated than this helper.
+   * @param text the text to compare to
+   * @param term the string of which the similarity is wanted
+   */
+  static calcDistancePercentage(text: string, term: string): number {
+    let longer: string = text.toLowerCase().trim();
+    let shorter: string = term.toLowerCase().trim();
+    if (longer.length < shorter.length) {
+      // longer should always have
+      // greater length
+      let temp: string = longer;
+      longer = shorter;
+      shorter = temp;
+    }
+    let longerLength: number = longer.length;
+    if (longerLength == 0) {
+      return 1.0;
+    }
+    let distance = levenshtein.get(longer, shorter);
+    return Math.round(((longerLength - distance) / longerLength) * 100) / 100;
   }
 }
 
@@ -87,7 +128,7 @@ export class HowLongToBeatParser {
     ).text();
 
     let platforms = [];
-    $('.profile_info').each(function() {
+    $('.profile_info').each(function () {
       const metaData = $(this).text();
       if (metaData.includes('Platforms:')) {
         platforms = metaData
@@ -101,7 +142,7 @@ export class HowLongToBeatParser {
     // be backward compatible
     let playableOn = platforms;
 
-    liElements.each(function() {
+    liElements.each(function () {
       let type: string = $(this)
         .find('h5')
         .text();
@@ -139,121 +180,6 @@ export class HowLongToBeatParser {
       1,
       gameName
     );
-  }
-
-  /**
-   * Parses the passed html to generate an Array of HowLongToBeatyEntrys.
-   * All the dirty DOM parsing and element traversing is done here.
-   * @param html the html as basis for the parsing. taking directly from the response of the hltb search
-   * @param searchTerm the query what was searched, only used to calculate the similarity
-   * @return an Array<HowLongToBeatEntry>s
-   */
-  static parseSearch(
-    html: string,
-    searchTerm: string
-  ): Array<HowLongToBeatEntry> {
-    let results: Array<HowLongToBeatEntry> = new Array<HowLongToBeatEntry>();
-    const $ = cheerio.load(html);
-
-    //check for result page
-    if ($('h3').length > 0) {
-      let liElements = $('li');
-      liElements.each(function() {
-        let gameTitleAnchor = $(this).find('a')[0];
-        let gameName: string = gameTitleAnchor.attribs.title;
-        const gameDescription = '';
-        const platforms = [];
-        let detailId: string = gameTitleAnchor.attribs.href.substring(
-          gameTitleAnchor.attribs.href.indexOf('?id=') + 4
-        );
-        let gameImage: string = $(gameTitleAnchor).find('img')[0].attribs.src;
-        //entry.setPropability(calculateSearchHitPropability(entry.getName(), searchTerm));
-        let timeLabels: Array<string[]> = new Array<string[]>();
-        let main: number = 0;
-        let mainExtra: number = 0;
-        let complete: number = 0;
-
-        try {
-          $(this)
-            .find('.search_list_details_block div.shadow_text')
-            .each(function() {
-              let type: string = $(this).text();
-              if (
-                type.startsWith('Main Story') ||
-                type.startsWith('Single-Player') ||
-                type.startsWith('Solo')
-              ) {
-                let time: number = HowLongToBeatParser.parseTime(
-                  $(this)
-                    .next()
-                    .text()
-                );
-                main = time;
-                timeLabels.push(['gameplayMain', type]);
-              } else if (
-                type.startsWith('Main + Extra') ||
-                type.startsWith('Co-Op')
-              ) {
-                let time: number = HowLongToBeatParser.parseTime(
-                  $(this)
-                    .next()
-                    .text()
-                );
-                mainExtra = time;
-                timeLabels.push(['gameplayMainExtra', type]);
-              } else if (
-                type.startsWith('Completionist') ||
-                type.startsWith('Vs.')
-              ) {
-                let time: number = HowLongToBeatParser.parseTime(
-                  $(this)
-                    .next()
-                    .text()
-                );
-                complete = time;
-                timeLabels.push(['gameplayCompletionist', type]);
-              }
-            });
-        } catch (e) {
-          console.error(e);
-        }
-        let entry = new HowLongToBeatEntry(
-          detailId,
-          gameName,
-          gameDescription,
-          platforms,
-          gameImage,
-          timeLabels,
-          main,
-          mainExtra,
-          complete,
-          HowLongToBeatParser.calcDistancePercentage(gameName, searchTerm),
-          searchTerm
-        );
-        results.push(entry);
-      });
-    }
-
-    return results;
-  }
-
-  /**
-   * Use this method to distinguish time descriptions for Online
-   * from Story mode games.
-   *
-   * Online Game: Solo, Co-Op & Vs.
-   * Story Game: Main Story, Main + Extra, Completionist
-   *
-   * @param times html snippet that contains the times
-   *
-   * @return true if is an online game, false for a story game
-   */
-  private static isOnlineGameTimeData(element: any): boolean {
-    if (element.find('.search_list_tidbit_short').length > 0) {
-      return true;
-    }
-
-    return false;
   }
 
   /**
@@ -310,28 +236,5 @@ export class HowLongToBeatParser {
     return parseInt(time);
   }
 
-  /**
-   * Calculates the similarty of two strings based on the levenshtein distance in relation to the string lengths.
-   * It is used to see how similar the search term is to the game name. This, of course has only relevance if the search term is really specific and matches the game name as good as possible.
-   * When using a proper search index, this would be the ranking/rating and much more sophisticated than this helper.
-   * @param text the text to compare to
-   * @param term the string of which the similarity is wanted
-   */
-  static calcDistancePercentage(text: string, term: string): number {
-    let longer: string = text.toLowerCase().trim();
-    let shorter: string = term.toLowerCase().trim();
-    if (longer.length < shorter.length) {
-      // longer should always have
-      // greater length
-      let temp: string = longer;
-      longer = shorter;
-      shorter = temp;
-    }
-    let longerLength: number = longer.length;
-    if (longerLength == 0) {
-      return 1.0;
-    }
-    let distance = levenshtein.get(longer, shorter);
-    return Math.round(((longerLength - distance) / longerLength) * 100) / 100;
-  }
+
 }

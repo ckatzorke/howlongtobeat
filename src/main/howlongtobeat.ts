@@ -35,7 +35,7 @@ export class HowLongToBeatService {
         '' + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
         resultEntry.game_name,
         '', // no description
-        resultEntry.profile_platform ? resultEntry.profile_platform.split(',') : [],
+        resultEntry.profile_platform ? resultEntry.profile_platform.split(', ') : [],
         HltbSearch.IMAGE_URL + resultEntry.game_image,
         null,
         Math.round(resultEntry.comp_main / 3600),

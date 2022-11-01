@@ -28,7 +28,7 @@ export class HowLongToBeatService {
       searchTerms,
       signal
     );
-    console.log(`Found ${search.count} results`);
+    // console.log(`Found ${search.count} results`);
     let hltbEntries = new Array<HowLongToBeatEntry>();
     for (const resultEntry of search.data) {
       hltbEntries.push(new HowLongToBeatEntry(

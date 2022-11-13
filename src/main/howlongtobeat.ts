@@ -37,7 +37,7 @@ export class HowLongToBeatService {
         '', // no description
         resultEntry.profile_platform ? resultEntry.profile_platform.split(', ') : [],
         HltbSearch.IMAGE_URL + resultEntry.game_image,
-        ["Main", "Main + Extra", "Completionist"],
+        [["Main", "Main"] , ["Main + Extra", "Main + Extra"], ["Completionist", "Completionist"]],
         Math.round(resultEntry.comp_main / 3600),
         Math.round(resultEntry.comp_plus / 3600),
         Math.round(resultEntry.comp_100 / 3600),

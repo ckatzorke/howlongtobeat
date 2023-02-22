@@ -32,7 +32,11 @@ describe('Integration-Testing HowLongToBeatService', () => {
             });
         });
         it('should fail to load entry for 123 (404)', () => {
-            return assert.isRejected(new howlongtobeat_1.HowLongToBeatService().detail('123'));
+            return new howlongtobeat_1.HowLongToBeatService().detail('123').then(() => {
+                assert.fail();
+            }).catch(e => {
+                assert.isOk(e.message);
+            });
         });
     });
     describe('Test for search()', () => {

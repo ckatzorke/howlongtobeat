@@ -50,7 +50,6 @@ class HltbSearch {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let result = yield axios.get(`${HltbSearch.DETAIL_URL}${gameId}`, {
-                    followRedirect: false,
                     headers: {
                         'User-Agent': new UserAgent().toString(),
                         'origin': 'https://howlongtobeat.com',

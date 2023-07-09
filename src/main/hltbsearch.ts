@@ -76,6 +76,7 @@ export class HltbSearch {
       let result =
         await axios.post(HltbSearch.SEARCH_URL, search, {
           headers: {
+            'User-Agent': new UserAgent().toString(),
             'content-type': 'application/json',
             'origin': 'https://howlongtobeat.com/',
             'referer': 'https://howlongtobeat.com/'

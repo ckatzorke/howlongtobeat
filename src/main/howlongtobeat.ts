@@ -119,16 +119,16 @@ export class HowLongToBeatParser {
     let gameplayMainExtra = 0;
     let gameplayComplete = 0;
 
-    gameName = $('.profile_header')[0].children[0].data.trim();
-    imageUrl = $('.game_image img')[0].attribs.src;
+    gameName = $('div[class*=GameHeader_profile_header__]')[0].children[0].data.trim();
+    imageUrl = $('div[class*=GameHeader_game_image__]')[0].children[0].attribs.src;
 
-    let liElements = $('.game_times li');
+    let liElements = $('div[class*=GameStats_game_times__] li');
     const gameDescription = $(
-      '.in.back_primary.shadow_box div.profile_info.large'
+      '.in.back_primary.shadow_box div[class*=GameSummary_large__]'
     ).text();
 
     let platforms = [];
-    $('.profile_info').each(function () {
+    $('div[class*=GameSummary_profile_info__]').each(function () {
       const metaData = $(this).text();
       if (metaData.includes('Platforms:')) {
         platforms = metaData
@@ -144,11 +144,11 @@ export class HowLongToBeatParser {
 
     liElements.each(function () {
       let type: string = $(this)
-        .find('h5')
+        .find('h4')
         .text();
       let time: number = HowLongToBeatParser.parseTime(
         $(this)
-          .find('div')
+          .find('h5')
           .text()
       );
       if (
@@ -158,7 +158,7 @@ export class HowLongToBeatParser {
       ) {
         gameplayMain = time;
         timeLabels.push(['gameplayMain', type]);
-      } else if (type.startsWith('Main + Extra') || type.startsWith('Co-Op')) {
+      } else if (type.startsWith('Main + Sides') || type.startsWith('Co-Op')) {
         gameplayMainExtra = time;
         timeLabels.push(['gameplayMainExtra', type]);
       } else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {

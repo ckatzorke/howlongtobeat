@@ -48,7 +48,6 @@ export class HltbSearch {
     try {
       let result =
         await axios.get(`${HltbSearch.DETAIL_URL}${gameId}`, {
-          followRedirect: false,
           headers: {
             'User-Agent': new UserAgent().toString(),
             'origin': 'https://howlongtobeat.com',

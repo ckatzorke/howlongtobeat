@@ -39,16 +39,16 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(detail.name, 'God of War III');
       assert.strictEqual(detail.searchTerm, 'God of War III');
       assert.strictEqual(detail.similarity, 1);
-      assert.strictEqual(detail.playableOn.length, 3);
-      assert.strictEqual(detail.platforms.length, 3);
-      assert.strictEqual(detail.gameplayCompletionist, 17);
+      assert.strictEqual(detail.playableOn.length, 2);
+      assert.strictEqual(detail.platforms.length, 2);
+      assert.strictEqual(detail.gameplayCompletionist, 17.5);
       assert.strictEqual(detail.gameplayMain, 10);
-      assert.strictEqual(detail.gameplayMainExtra, 10.5);
+      assert.strictEqual(detail.gameplayMainExtra, 11);
     });
   });
 
-  describe('Test for parsing minutes correctly from detail page. Example is Street Fighter which claims to take 50 Mins to beat (main)', () => {
-    it('should parse the main time correctly  (static, from id=9224 - Street Fighter, takes 50 Minutes)', () => {
+  describe('Test for parsing minutes correctly from detail page. Example is Street Fighter which claims to take 1 Hours to beat (main)', () => {
+    it('should parse the main time correctly  (static, from id=9224 - Street Fighter, takes 1 Hours)', () => {
       const html = fs.readFileSync(
         'src/test/resources/detail_street_fighter.html',
         'utf-8'
@@ -60,14 +60,14 @@ describe('Testing HowLongToBeatParser', () => {
       assert.strictEqual(detail.similarity, 1);
       //should be one, since 1 hours is the minimum
       assert.strictEqual(detail.gameplayMain, 1);
-      assert.strictEqual(detail.gameplayMainExtra, 1);
-      assert.strictEqual(detail.gameplayCompletionist, 3.5);
+      assert.strictEqual(detail.gameplayMainExtra, 2.5);
+      assert.strictEqual(detail.gameplayCompletionist, 4);
     });
   });
 
   
   describe('Test for parsing minutes correctly from detail page. Example is Guns of Icarus Online which does not have Co-Op time but it has Vs.', () => {
-    it('should parse the Co-Op and Vs. time correctly  (static, from id=4216 - Street Fighter, takes 0 Minutes and 20.5 for Vs.)', () => {
+    it('should parse the Co-Op and Vs. time correctly  (static, from id=4216 - Guns of Icarus Online, takes 0 Minutes and 26 for Vs.)', () => {
       const html = fs.readFileSync(
         'src/test/resources/detail_guns_of_icarus_online.html',
         'utf-8'
@@ -80,7 +80,7 @@ describe('Testing HowLongToBeatParser', () => {
       //should be one, since 1 hours is the minimum
       assert.strictEqual(detail.gameplayMain, 0);
       assert.strictEqual(detail.gameplayMainExtra, 0);
-      assert.strictEqual(detail.gameplayCompletionist, 20.5);
+      assert.strictEqual(detail.gameplayCompletionist, 26);
     });
   });
   

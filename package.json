@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/ckatzorke/howlongtobeat",
   "dependencies": {
-    "axios": "^1.6",
+    "@hapi/hoek": "^11.0.4",
+    "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12",
     "fast-levenshtein": "^2.0.6",
     "user-agents": "^1.0.580"
@@ -33,7 +34,6 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "codecov": "^3.7.1",
-    "hoek": "^5.0.4",
     "mocha": "^10.0.0",
     "nyc": "^15.0.0",
     "typescript": "^2.9.2"

@@ -1,49 +1,60 @@
-const cheerio = require('cheerio');
-const levenshtein = require('fast-levenshtein');
+const cheerio = require("cheerio");
+const levenshtein = require("fast-levenshtein");
 
-import { HltbSearch } from './hltbsearch';
+import { HltbSearch } from "./hltbsearch";
 
 export class HowLongToBeatService {
   private hltb: HltbSearch = new HltbSearch();
 
-  constructor() { }
+  constructor() {}
 
   /**
    * Get HowLongToBeatEntry from game id, by fetching the detail page like https://howlongtobeat.com/game.php?id=6974 and parsing it.
    * @param gameId the hltb internal gameid
    * @return Promise<HowLongToBeatEntry> the promise that, when fullfilled, returns the game
    */
-  async detail(gameId: string, signal?: AbortSignal): Promise<HowLongToBeatEntry> {
-    let detailPage = await this.hltb.detailHtml(
-      gameId,
-      signal
-    );
+  async detail(
+    gameId: string,
+    signal?: AbortSignal
+  ): Promise<HowLongToBeatEntry> {
+    let detailPage = await this.hltb.detailHtml(gameId, signal);
     let entry = HowLongToBeatParser.parseDetails(detailPage, gameId);
     return entry;
   }
 
-  async search(query: string, signal?: AbortSignal): Promise<Array<HowLongToBeatEntry>> {
-    let searchTerms = query.split(' ');
-    let search = await this.hltb.search(
-      searchTerms,
-      signal
-    );
+  async search(
+    query: string,
+    signal?: AbortSignal
+  ): Promise<Array<HowLongToBeatEntry>> {
+    let searchTerms = query.split(" ");
+    let search = await this.hltb.search(searchTerms, signal);
     // console.log(`Found ${search.count} results`);
     let hltbEntries = new Array<HowLongToBeatEntry>();
     for (const resultEntry of search.data) {
-      hltbEntries.push(new HowLongToBeatEntry(
-        '' + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
-        resultEntry.game_name,
-        '', // no description
-        resultEntry.profile_platform ? resultEntry.profile_platform.split(', ') : [],
-        HltbSearch.IMAGE_URL + resultEntry.game_image,
-        [["Main", "Main"] , ["Main + Extra", "Main + Extra"], ["Completionist", "Completionist"]],
-        Math.round(resultEntry.comp_main / 3600),
-        Math.round(resultEntry.comp_plus / 3600),
-        Math.round(resultEntry.comp_100 / 3600),
-        HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query),
-        query
-      ));
+      hltbEntries.push(
+        new HowLongToBeatEntry(
+          "" + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
+          resultEntry.game_name,
+          "", // no description
+          resultEntry.profile_platform
+            ? resultEntry.profile_platform.split(", ")
+            : [],
+          HltbSearch.IMAGE_URL + resultEntry.game_image,
+          [
+            ["Main", "Main"],
+            ["Main + Extra", "Main + Extra"],
+            ["Completionist", "Completionist"],
+          ],
+          Math.round(resultEntry.comp_main / 3600),
+          Math.round(resultEntry.comp_plus / 3600),
+          Math.round(resultEntry.comp_100 / 3600),
+          HowLongToBeatService.calcDistancePercentage(
+            resultEntry.game_name,
+            query
+          ),
+          query
+        )
+      );
     }
     return hltbEntries;
   }
@@ -112,30 +123,33 @@ export class HowLongToBeatParser {
    */
   static parseDetails(html: string, id: string): HowLongToBeatEntry {
     const $ = cheerio.load(html);
-    let gameName = '';
-    let imageUrl = '';
+    let gameName = "";
+    let imageUrl = "";
     let timeLabels: Array<string[]> = new Array<string[]>();
     let gameplayMain = 0;
     let gameplayMainExtra = 0;
     let gameplayComplete = 0;
 
-    gameName = $('div[class*=GameHeader_profile_header__]')[0].children[0].data.trim();
-    imageUrl = $('div[class*=GameHeader_game_image__]')[0].children[0].attribs.src;
+    gameName = $(
+      "div[class*=GameHeader_profile_header__]"
+    )[0].children[0].data.trim();
+    imageUrl = $("div[class*=GameHeader_game_image__]")[0].children[0].attribs
+      .src;
 
-    let liElements = $('div[class*=GameStats_game_times__] li');
+    let liElements = $("div[class*=GameStats_game_times__] li");
     const gameDescription = $(
-      '.in.back_primary.shadow_box div[class*=GameSummary_large__]'
+      ".in.back_primary.shadow_box div[class*=GameSummary_large__]"
     ).text();
 
     let platforms = [];
-    $('div[class*=GameSummary_profile_info__]').each(function () {
+    $("div[class*=GameSummary_profile_info__]").each(function () {
       const metaData = $(this).text();
-      if (metaData.includes('Platforms:')) {
+      if (metaData.includes("Platforms:")) {
         platforms = metaData
-          .replace(/\n/g, '')
-          .replace('Platforms:', '')
-          .split(',')
-          .map(data => data.trim());
+          .replace(/\n/g, "")
+          .replace("Platforms:", "")
+          .split(",")
+          .map((data) => data.trim());
         return;
       }
     });
@@ -143,27 +157,23 @@ export class HowLongToBeatParser {
     let playableOn = platforms;
 
     liElements.each(function () {
-      let type: string = $(this)
-        .find('h4')
-        .text();
+      let type: string = $(this).find("h4").text();
       let time: number = HowLongToBeatParser.parseTime(
-        $(this)
-          .find('h5')
-          .text()
+        $(this).find("h5").text()
       );
       if (
-        type.startsWith('Main Story') ||
-        type.startsWith('Single-Player') ||
-        type.startsWith('Solo')
+        type.startsWith("Main Story") ||
+        type.startsWith("Single-Player") ||
+        type.startsWith("Solo")
       ) {
         gameplayMain = time;
-        timeLabels.push(['gameplayMain', type]);
-      } else if (type.startsWith('Main + Sides') || type.startsWith('Co-Op')) {
+        timeLabels.push(["gameplayMain", type]);
+      } else if (type.startsWith("Main + Sides") || type.startsWith("Co-Op")) {
         gameplayMainExtra = time;
-        timeLabels.push(['gameplayMainExtra', type]);
-      } else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
+        timeLabels.push(["gameplayMainExtra", type]);
+      } else if (type.startsWith("Completionist") || type.startsWith("Vs.")) {
         gameplayComplete = time;
-        timeLabels.push(['gameplayComplete', type]);
+        timeLabels.push(["gameplayComplete", type]);
       }
     });
 
@@ -193,10 +203,10 @@ export class HowLongToBeatParser {
    */
   private static parseTime(text: string): number {
     // '65&#189; Hours/Mins'; '--' if not known
-    if (text.startsWith('--')) {
+    if (text.startsWith("--")) {
       return 0;
     }
-    if (text.indexOf(' - ') > -1) {
+    if (text.indexOf(" - ") > -1) {
       return HowLongToBeatParser.handleRange(text);
     }
     return HowLongToBeatParser.getTime(text);
@@ -209,7 +219,7 @@ export class HowLongToBeatParser {
    * @return the arithmetic median of the range
    */
   private static handleRange(text: string): number {
-    let range: Array<string> = text.split(' - ');
+    let range: Array<string> = text.split(" - ");
     let d: number =
       (HowLongToBeatParser.getTime(range[0]) +
         HowLongToBeatParser.getTime(range[1])) /
@@ -225,16 +235,14 @@ export class HowLongToBeatParser {
    */
   private static getTime(text: string): number {
     //check for Mins, then assume 1 hour at least
-    const timeUnit = text.substring(text.indexOf(' ') + 1).trim();
-    if (timeUnit === 'Mins') {
+    const timeUnit = text.substring(text.indexOf(" ") + 1).trim();
+    if (timeUnit === "Mins") {
       return 1;
     }
-    let time: string = text.substring(0, text.indexOf(' '));
-    if (time.indexOf('½') > -1) {
-      return 0.5 + parseInt(time.substring(0, text.indexOf('½')));
+    let time: string = text.substring(0, text.indexOf(" "));
+    if (time.indexOf("½") > -1) {
+      return 0.5 + parseInt(time.substring(0, text.indexOf("½")));
     }
     return parseInt(time);
   }
-
-
 }

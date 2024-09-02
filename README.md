@@ -44,7 +44,19 @@ let hltbService = new HowLongToBeatService();
 hltbService.search('Nioh').then(result => console.log(result));
 ```
 
-`search()` will return a `Promise` with an `Array<HowLongToBeatEntry>`
+* Or with an exact year of release
+
+```javascript
+hltbService.searchWithOptions('Nioh', { year: 2017 }).then(result => console.log(result));
+```
+
+* Or within a range of years
+
+```javascript
+hltbService.searchWithOptions('Nioh', { minYear: 2017, maxYear: 2019 }).then(result => console.log(result));
+```
+
+`search()` and `searchWithOptions()` will return a `Promise` with an `Array<HowLongToBeatEntry>`
 
 * Search response example:
 

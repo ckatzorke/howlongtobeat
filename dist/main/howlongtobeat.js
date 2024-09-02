@@ -29,14 +29,46 @@ class HowLongToBeatService {
     }
     search(query, signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            return this.searchWithOptions(query, null, signal);
+        });
+    }
+    searchWithOptions(query, searchOptions, signal) {
+        return __awaiter(this, void 0, void 0, function* () {
             let searchTerms = query.split(' ');
-            let search = yield this.hltb.search(searchTerms, signal);
+            let search = yield this.hltb.searchWithOptions(searchTerms, searchOptions, signal);
             // console.log(`Found ${search.count} results`);
             let hltbEntries = new Array();
             for (const resultEntry of search.data) {
+                let gameplayMain = 0, gameplayMainExtra = 0, gameplayCompletionist = 0;
+                let timeLabels = new Map();
+                let { comp_lvl_sp, comp_lvl_co, comp_lvl_mp, comp_lvl_combine, comp_main, comp_100, comp_all, comp_plus, invested_co, invested_mp } = resultEntry;
+                if (comp_lvl_sp === 1) {
+                    if (comp_lvl_combine === 1) {
+                        timeLabels.set('gameplayMain', 'Solo');
+                        gameplayMain = comp_all;
+                    }
+                    else {
+                        timeLabels.set('gameplayMain', 'Main Story');
+                        gameplayMain = comp_main;
+                        timeLabels.set('gameplayMainExtra', 'Main + Extra');
+                        gameplayMainExtra = comp_plus;
+                        timeLabels.set('gameplayCompletionist', 'Completionist');
+                        gameplayCompletionist = comp_100;
+                    }
+                }
+                if ((comp_lvl_sp === 0 || comp_lvl_combine === 1) && (comp_lvl_co === 1 || comp_lvl_mp === 1)) {
+                    if (comp_lvl_co === 1) {
+                        timeLabels.set('gameplayMainExtra', 'Co-Op');
+                        gameplayMainExtra = invested_co;
+                    }
+                    if (comp_lvl_mp === 1) {
+                        timeLabels.set('gameplayCompletionist', 'Vs.');
+                        gameplayCompletionist = invested_mp;
+                    }
+                }
                 hltbEntries.push(new HowLongToBeatEntry('' + resultEntry.game_id, // game id is now a number, but I want to keep the model stable
                 resultEntry.game_name, '', // no description
-                resultEntry.profile_platform ? resultEntry.profile_platform.split(', ') : [], hltbsearch_1.HltbSearch.IMAGE_URL + resultEntry.game_image, [["Main", "Main"], ["Main + Extra", "Main + Extra"], ["Completionist", "Completionist"]], Math.round(resultEntry.comp_main / 3600), Math.round(resultEntry.comp_plus / 3600), Math.round(resultEntry.comp_100 / 3600), HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query), query));
+                resultEntry.profile_platform ? resultEntry.profile_platform.split(', ') : [], hltbsearch_1.HltbSearch.IMAGE_URL + resultEntry.game_image, [...timeLabels.entries()], Math.round(gameplayMain / 3600), Math.round(gameplayMainExtra / 3600), Math.round(gameplayCompletionist / 3600), HowLongToBeatService.calcDistancePercentage(resultEntry.game_name, query), query));
             }
             return hltbEntries;
         });
@@ -107,7 +139,7 @@ class HowLongToBeatParser {
         let timeLabels = new Array();
         let gameplayMain = 0;
         let gameplayMainExtra = 0;
-        let gameplayComplete = 0;
+        let gameplayCompletionist = 0;
         gameName = $('div[class*=GameHeader_profile_header__]')[0].children[0].data.trim();
         imageUrl = $('div[class*=GameHeader_game_image__]')[0].children[0].attribs.src;
         let liElements = $('div[class*=GameStats_game_times__] li');
@@ -144,11 +176,11 @@ class HowLongToBeatParser {
                 timeLabels.push(['gameplayMainExtra', type]);
             }
             else if (type.startsWith('Completionist') || type.startsWith('Vs.')) {
-                gameplayComplete = time;
-                timeLabels.push(['gameplayComplete', type]);
+                gameplayCompletionist = time;
+                timeLabels.push(['gameplayCompletionist', type]);
             }
         });
-        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayComplete, 1, gameName);
+        return new HowLongToBeatEntry(id, gameName, gameDescription, platforms, imageUrl, timeLabels, gameplayMain, gameplayMainExtra, gameplayCompletionist, 1, gameName);
     }
     /**
      * Utility method used for parsing a given input text (like

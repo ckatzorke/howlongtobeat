@@ -119,21 +119,25 @@ export class HowLongToBeatParser {
     let gameplayMainExtra = 0;
     let gameplayComplete = 0;
 
-    gameName = $('div[class*=GameHeader_profile_header__]')[0].children[0].data.trim();
-    imageUrl = $('div[class*=GameHeader_game_image__]')[0].children[0].attribs.src;
+    gameName = $('div[class*=profile_header] div[class*=profile_header]').first().text().trim();
+    imageUrl = $('div[class*=game_image] img').first().attr('src') || '';
 
-    let liElements = $('div[class*=GameStats_game_times__] li');
+    // New site uses div.stat elements, old site used li elements
+    let statElements = $('div[class*=GameStats][class*=game_times] div[class*=stat]');
+    if (statElements.length === 0) {
+      statElements = $('div[class*=GameStats][class*=game_times] li');
+    }
     const gameDescription = $(
-      '.in.back_primary.shadow_box div[class*=GameSummary_large__]'
+      'div[class*=GameSummary][class*=large]'
     ).text();
 
     let platforms = [];
-    $('div[class*=GameSummary_profile_info__]').each(function () {
+    $('div[class*=GameSummary][class*=profile_info]').each(function () {
       const metaData = $(this).text();
-      if (metaData.includes('Platforms:')) {
+      if (metaData.includes('Platforms:') || metaData.includes('Platform:')) {
         platforms = metaData
           .replace(/\n/g, '')
-          .replace('Platforms:', '')
+          .replace(/Platforms?:/, '')
           .split(',')
           .map(data => data.trim());
         return;
@@ -142,7 +146,7 @@ export class HowLongToBeatParser {
     // be backward compatible
     let playableOn = platforms;
 
-    liElements.each(function () {
+    statElements.each(function () {
       let type: string = $(this)
         .find('h4')
         .text();

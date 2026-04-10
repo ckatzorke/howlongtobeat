@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai = require("chai");
 const fs = require("fs");
 const howlongtobeat_1 = require("../main/howlongtobeat");
+const hltbsearch_1 = require("../main/hltbsearch");
 const expect = chai.expect;
 const assert = chai.assert;
 describe('Testing HowLongToBeatParser', () => {
@@ -57,6 +58,36 @@ describe('Testing HowLongToBeatParser', () => {
             assert.strictEqual(detail.gameplayMain, 0);
             assert.strictEqual(detail.gameplayMainExtra, 0);
             assert.strictEqual(detail.gameplayCompletionist, 26);
+        });
+    });
+    describe('Test for gameId validation (SSRF prevention)', () => {
+        it('should reject a gameId with path traversal characters', () => {
+            return new howlongtobeat_1.HowLongToBeatService().detail('../../etc').then(() => {
+                assert.fail('Should have thrown');
+            }).catch(e => {
+                assert.include(e.message, 'Invalid gameId');
+            });
+        });
+        it('should reject a gameId with CRLF injection', () => {
+            return new howlongtobeat_1.HowLongToBeatService().detail('2224\r\nHost: evil.com').then(() => {
+                assert.fail('Should have thrown');
+            }).catch(e => {
+                assert.include(e.message, 'Invalid gameId');
+            });
+        });
+        it('should reject a non-numeric gameId', () => {
+            return new howlongtobeat_1.HowLongToBeatService().detail('abc').then(() => {
+                assert.fail('Should have thrown');
+            }).catch(e => {
+                assert.include(e.message, 'Invalid gameId');
+            });
+        });
+        it('should accept a valid numeric gameId', () => {
+            const hltb = new hltbsearch_1.HltbSearch();
+            // Just verify validation passes (does not throw) — the actual HTTP call may fail
+            assert.doesNotThrow(() => {
+                hltbsearch_1.HltbSearch.validateGameId('2224');
+            });
         });
     });
 });

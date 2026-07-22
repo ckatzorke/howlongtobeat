@@ -9,7 +9,7 @@
 [How long to beat](https://howlongtobeat.com/) provides information and data about games and how long it will take to finish them.
 
 This library is a simple wrapper api to fetch data from [How long to beat](https://howlongtobeat.com/) (search and detail).
-It is an awesome website and a great service, also heavily living from community data. Please check the website and [support](https://howlongtobeat.com/donate.php) if you like what they are doing.
+It is an awesome website and a great service, also heavily living from community data.
 
 ## Usage
 

@@ -116,6 +116,27 @@ HLTB has 7 differents ways to count games hours, here they are:
 
 Use the `timeLabels` attribute for mapping purposes
 
+## How it talks to howlongtobeat.com
+
+The site protects its search API and renames the endpoint from time to time
+(`/api/search`, `/api/s/<key>`, `/api/find`, currently `/api/search/site`). To keep working across
+those changes, a search:
+
+1. **finds the endpoint** in the site's own JavaScript: it loads the home page and its
+   `/_next/static/chunks/` scripts, and takes the path the code `POST`s to *and* calls `<path>/init` on
+   (other POSTs, like `/api/error`, are ignored). The result is cached for an hour and shared by all
+   instances; if it cannot be found, the last known endpoint is used.
+2. **gets a token** from `GET <path>/init?t=<ms>`, cached for 5 minutes. If the response also carries a
+   key/value pair (older versions of the site asked for it), it is sent back as `x-hp-key`/`x-hp-val`
+   headers and inside the payload.
+3. **searches** with `POST <path>` and the `x-auth-token` header.
+
+If the search is rejected (401/403) or the endpoint is gone (404/405), the endpoint and the token are
+discovered again and the search is retried once.
+
+Details (`detail()`) read the game data from the page's `__NEXT_DATA__` JSON (`/game/<id>`), which
+needs no token.
+
 ## Known issues
 
 ### Missing features

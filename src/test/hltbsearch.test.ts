@@ -6,34 +6,78 @@ import { HowLongToBeatService } from '../main/howlongtobeat';
 const axios: any = require('axios');
 const assert = chai.assert;
 
+const BASE = 'https://howlongtobeat.com';
+
+/** a chunk that POSTs somewhere unrelated: must never be taken for the search endpoint */
+const ERROR_CHUNK = 'let r=async e=>{await fetch("/api/error",{method:"POST",body:JSON.stringify(e)})};';
+
+/** a chunk shaped like the site's search code */
+function searchChunk(path: string): string {
+  return 'er=async()=>{let e=await fetch(`' + path + '/init?t=${Date.now()}`);if(e.ok){let t=await e.json();return t}};' +
+    'es=async e=>{let a=await fetch("' + path + '",{method:"POST",headers:{"Content-Type":"application/json","x-auth-token":e.token},body:JSON.stringify(q)})};';
+}
+
+function homePage(chunks: string[]): string {
+  return '<html><head>' + chunks.map(c => `<script src="/_next/static/chunks/${c}.js" async=""></script>`).join('') +
+    '<script src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script></head><body></body></html>';
+}
+
+interface FakeOptions {
+  /** endpoint the fake site serves (and advertises in its chunk) */
+  path?: string;
+  /** the chunk advertises this path instead (simulates a site that moved after discovery) */
+  advertisedPath?: string;
+  rejectFirstToken?: boolean;
+  homeFails?: boolean;
+  initExtra?: any;
+}
+
 /**
- * Replaces axios.get / axios.post with fakes that behave like howlongtobeat.com:
- * the init endpoint hands out tokens, the search endpoint accepts only a valid one.
+ * Replaces axios.get / axios.post with fakes that behave like howlongtobeat.com.
  */
-function fakeServer(options: { rejectFirstToken?: boolean } = {}) {
+function fakeServer(options: FakeOptions = {}) {
+  const path = options.path || '/api/search/site';
+  const advertised = options.advertisedPath || path;
   const calls: any[] = [];
   let issued = 0;
   const valid = new Set<string>();
   const originalGet = axios.get;
   const originalPost = axios.post;
+  const chunks: any = { 'aaa111': ERROR_CHUNK, 'bbb222': searchChunk(advertised) };
 
   axios.get = async (url: string, config: any) => {
     calls.push({ method: 'GET', url, headers: config.headers });
-    if (url.startsWith(HltbSearch.INIT_URL + '?t=')) {
+    if (url === BASE + '/') {
+      if (options.homeFails) {
+        const error: any = new Error('Request failed with status code 503');
+        error.response = { status: 503 };
+        throw error;
+      }
+      return { data: homePage(Object.keys(chunks)) };
+    }
+    const chunk = url.match(/\/_next\/static\/chunks\/(\w+)\.js$/);
+    if (chunk) {
+      return { data: chunks[chunk[1]] };
+    }
+    if (url.startsWith(BASE + path + '/init?t=')) {
       issued++;
       const token = `token-${issued}`;
       if (!(options.rejectFirstToken && issued === 1)) {
         valid.add(token);
       }
-      return { data: { token } };
+      return { data: { token, ...(options.initExtra || {}) } };
     }
-    throw new Error('unexpected GET ' + url);
+    const error: any = new Error('Request failed with status code 404');
+    error.response = { status: 404 };
+    throw error;
   };
 
   axios.post = async (url: string, body: any, config: any) => {
     calls.push({ method: 'POST', url, body, headers: config.headers });
-    if (url !== HltbSearch.SEARCH_URL) {
-      throw new Error('unexpected POST ' + url);
+    if (url !== BASE + path) {
+      const error: any = new Error('Request failed with status code 404');
+      error.response = { status: 404 };
+      throw error;
     }
     if (!valid.has(config.headers['x-auth-token'])) {
       const error: any = new Error('Request failed with status code 403');
@@ -58,38 +102,77 @@ function fakeServer(options: { rejectFirstToken?: boolean } = {}) {
 
   return {
     calls,
+    gets: () => calls.filter(c => c.method === 'GET').map(c => c.url),
+    posts: () => calls.filter(c => c.method === 'POST'),
     restore: () => { axios.get = originalGet; axios.post = originalPost; }
   };
 }
 
-describe('Testing HltbSearch token flow (no network)', () => {
+describe('Testing HltbSearch endpoint discovery (no network)', () => {
+  it('takes the POST endpoint whose script also calls its /init, ignoring other POSTs', () => {
+    assert.isNull(HltbSearch.findSearchPath(ERROR_CHUNK));
+    assert.deepEqual(HltbSearch.findSearchPath(searchChunk('/api/search/site')), { path: '/api/search/site', confidence: 'strong' });
+    assert.deepEqual(HltbSearch.findSearchPath(ERROR_CHUNK + searchChunk('/api/finder/v2')), { path: '/api/finder/v2', confidence: 'strong' });
+  });
 
-  it('fetches a token, sends it as x-auth-token and posts the new payload', async () => {
+  it('accepts a POST endpoint without /init only as a weak match, when the script sends x-auth-token', () => {
+    const js = 'fetch("/api/find",{method:"POST",headers:{"x-auth-token":t}})';
+    assert.deepEqual(HltbSearch.findSearchPath(js), { path: '/api/find', confidence: 'weak' });
+  });
+
+  it('lists only Next.js chunks from the home page', () => {
+    assert.deepEqual(HltbSearch.findChunkScripts(homePage(['a1', 'b2'])), ['/_next/static/chunks/a1.js', '/_next/static/chunks/b2.js']);
+  });
+
+  it('reads the token and an optional honeypot pair from /init', () => {
+    assert.deepEqual(HltbSearch.parseAuth({ token: 't' }), { token: 't' });
+    assert.deepEqual(HltbSearch.parseAuth({ token: 't', hpKey: 'abc', hpVal: '123' }), { token: 't', hpKey: 'abc', hpVal: '123' });
+    assert.isNull(HltbSearch.parseAuth({}));
+  });
+});
+
+describe('Testing HltbSearch search flow (no network)', () => {
+  beforeEach(() => HltbSearch.resetDiscovery());
+
+  it('discovers the endpoint, gets a token and posts the search with it', async () => {
     const server = fakeServer();
     try {
       const result = await new HltbSearch().search(['fixture', 'quest']);
       assert.strictEqual(result.count, 1);
-      const [init, post] = server.calls;
-      assert.strictEqual(init.method, 'GET');
-      assert.strictEqual(post.method, 'POST');
+      assert.include(server.gets(), BASE + '/');
+      const post = server.posts()[0];
+      assert.strictEqual(post.url, BASE + '/api/search/site');
       assert.strictEqual(post.headers['x-auth-token'], 'token-1');
+      assert.isUndefined(post.headers['x-hp-key']);
       assert.deepEqual(post.body.searchTerms, ['fixture', 'quest']);
       assert.deepEqual(post.body.searchOptions.games.platform, { mode: 'include', values: [] });
       assert.strictEqual(post.body.useCache, true);
-      // same browser for both requests
-      assert.strictEqual(init.headers['User-Agent'], post.headers['User-Agent']);
+      const userAgents = new Set(server.calls.map(c => c.headers['User-Agent']));
+      assert.strictEqual(userAgents.size, 1);
     } finally {
       server.restore();
     }
   });
 
-  it('reuses the token for later searches', async () => {
+  it('follows the site when the endpoint changes name', async () => {
+    const server = fakeServer({ path: '/api/finder/v2' });
+    try {
+      await new HltbSearch().search(['a']);
+      assert.strictEqual(server.posts()[0].url, BASE + '/api/finder/v2');
+    } finally {
+      server.restore();
+    }
+  });
+
+  it('reuses endpoint and token for later searches, across instances for the endpoint', async () => {
     const server = fakeServer();
     try {
       const hltb = new HltbSearch();
       await hltb.search(['a']);
       await hltb.search(['b']);
-      assert.strictEqual(server.calls.filter(c => c.method === 'GET').length, 1);
+      await new HltbSearch().search(['c']);
+      assert.strictEqual(server.gets().filter(u => u === BASE + '/').length, 1);
+      assert.strictEqual(server.gets().filter(u => u.indexOf('/init?t=') > -1).length, 2);
     } finally {
       server.restore();
     }
@@ -100,9 +183,66 @@ describe('Testing HltbSearch token flow (no network)', () => {
     try {
       const result = await new HltbSearch().search(['a']);
       assert.strictEqual(result.count, 1);
-      const posts = server.calls.filter(c => c.method === 'POST');
-      assert.strictEqual(posts.length, 2);
-      assert.strictEqual(posts[1].headers['x-auth-token'], 'token-2');
+      assert.strictEqual(server.posts().length, 2);
+      assert.strictEqual(server.posts()[1].headers['x-auth-token'], 'token-2');
+    } finally {
+      server.restore();
+    }
+  });
+
+  it('sends the honeypot pair as headers and in the body when /init returns one', async () => {
+    const server = fakeServer({ initExtra: { hpKey: 'abc123', hpVal: 'xyz' } });
+    try {
+      await new HltbSearch().search(['a']);
+      const post = server.posts()[0];
+      assert.strictEqual(post.headers['x-hp-key'], 'abc123');
+      assert.strictEqual(post.headers['x-hp-val'], 'xyz');
+      assert.strictEqual(post.body['abc123'], 'xyz');
+    } finally {
+      server.restore();
+    }
+  });
+
+  it('falls back to the last known endpoint when the home page cannot be read', async () => {
+    const server = fakeServer({ homeFails: true });
+    try {
+      const result = await new HltbSearch().search(['a']);
+      assert.strictEqual(result.count, 1);
+      assert.strictEqual(server.posts()[0].url, BASE + HltbSearch.FALLBACK_SEARCH_PATH);
+    } finally {
+      server.restore();
+    }
+  });
+
+  it('discovers again and retries when a cached endpoint has gone away (404)', async () => {
+    const old = fakeServer();
+    try {
+      await new HltbSearch().search(['a']);
+    } finally {
+      old.restore();
+    }
+    // the site moves to a new endpoint while the old one is still cached
+    const server = fakeServer({ path: '/api/finder/v2' });
+    try {
+      const result = await new HltbSearch().search(['b']);
+      assert.strictEqual(result.count, 1);
+      // the cached endpoint's /init answers 404, which triggers a new discovery
+      const gets = server.gets().map(u => u.replace(/\?t=\d+$/, ''));
+      assert.deepEqual(gets.filter(u => u.endsWith('/init')), [BASE + '/api/search/site/init', BASE + '/api/finder/v2/init']);
+      assert.include(gets, BASE + '/');
+      assert.deepEqual(server.posts().map(p => p.url), [BASE + '/api/finder/v2']);
+    } finally {
+      server.restore();
+    }
+  });
+
+  it('fails with a readable status when the retry fails too', async () => {
+    const server = fakeServer({ path: '/api/finder/v2', advertisedPath: '/api/gone' });
+    try {
+      await new HltbSearch().search(['a']);
+      assert.fail('should have thrown');
+    } catch (e) {
+      assert.include(e.message, 'non-200');
     } finally {
       server.restore();
     }

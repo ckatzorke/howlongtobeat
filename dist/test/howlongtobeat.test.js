@@ -16,6 +16,47 @@ describe('Testing HowLongToBeatParser', () => {
             assert.strictEqual(perc, 0.9);
         });
     });
+    describe('Test for parseDetail with the current page format (__NEXT_DATA__ JSON)', () => {
+        it('should read a single-player game from __NEXT_DATA__', () => {
+            const html = fs.readFileSync('src/test/resources/detail_nextdata_singleplayer.html', 'utf-8');
+            const detail = howlongtobeat_1.HowLongToBeatParser.parseDetails(html, '10001');
+            assert.strictEqual(detail.id, '10001');
+            assert.strictEqual(detail.name, 'Fixture Quest');
+            assert.strictEqual(detail.searchTerm, 'Fixture Quest');
+            assert.strictEqual(detail.similarity, 1);
+            assert.strictEqual(detail.description, 'A test game used by the unit tests.');
+            assert.deepEqual(detail.platforms, ['PC', 'PlayStation 5', 'Nintendo Switch']);
+            assert.strictEqual(detail.playableOn.length, 3);
+            assert.strictEqual(detail.imageUrl, 'https://howlongtobeat.com/games/10001_Fixture_Quest.jpg');
+            assert.strictEqual(detail.gameplayMain, 10);
+            assert.strictEqual(detail.gameplayMainExtra, 15.5);
+            assert.strictEqual(detail.gameplayCompletionist, 25);
+            assert.deepEqual(detail.timeLabels, [
+                ['gameplayMain', 'Main Story'],
+                ['gameplayMainExtra', 'Main + Sides'],
+                ['gameplayComplete', 'Completionist']
+            ]);
+        });
+        it('should map Vs. time of a multiplayer-only game to gameplayCompletionist', () => {
+            const html = fs.readFileSync('src/test/resources/detail_nextdata_multiplayer.html', 'utf-8');
+            const detail = howlongtobeat_1.HowLongToBeatParser.parseDetails(html, '10002');
+            assert.strictEqual(detail.name, 'Fixture Arena');
+            assert.strictEqual(detail.gameplayMain, 0);
+            assert.strictEqual(detail.gameplayMainExtra, 0);
+            assert.strictEqual(detail.gameplayCompletionist, 26);
+            assert.deepEqual(detail.timeLabels, [['gameplayComplete', 'Vs.']]);
+        });
+        it('should count times under an hour as 1 hour and missing times as 0', () => {
+            const html = fs.readFileSync('src/test/resources/detail_nextdata_short.html', 'utf-8');
+            const detail = howlongtobeat_1.HowLongToBeatParser.parseDetails(html, '10003');
+            assert.strictEqual(detail.gameplayMain, 1);
+            assert.strictEqual(detail.gameplayMainExtra, 1.5);
+            assert.strictEqual(detail.gameplayCompletionist, 0);
+        });
+        it('should fail with a clear message on a page it cannot parse', () => {
+            assert.throws(() => howlongtobeat_1.HowLongToBeatParser.parseDetails('<html><body>nothing</body></html>', '1'), /may have changed/);
+        });
+    });
     describe('Test for parseDetail, if this succeeds, but live installment fails, howlongtobeat.com may have changed their html', () => {
         it('should parse the details page  (static, from id=3978 - God of War 3)', () => {
             let html = fs.readFileSync('src/test/resources/detail_gow3.html', 'utf-8');

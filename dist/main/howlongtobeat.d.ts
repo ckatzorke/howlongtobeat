@@ -48,6 +48,27 @@ export declare class HowLongToBeatParser {
      */
     static parseDetails(html: string, id: string): HowLongToBeatEntry;
     /**
+     * Finds the game object inside the page's __NEXT_DATA__ JSON, or null when the page has none.
+     */
+    static extractNextDataGame(html: string): any;
+    /**
+     * Builds the entry from the JSON game object. Times are in seconds there.
+     * Games without single-player times (multiplayer only) report Co-Op and Vs. instead,
+     * mapped like the old page did: Co-Op -> gameplayMainExtra, Vs. -> gameplayCompletionist.
+     */
+    static parseNextDataGame(game: any, id: string): HowLongToBeatEntry;
+    /**
+     * Seconds to hours, rounded to the nearest half hour (like the site shows them).
+     * Anything under an hour counts as 1 hour, as the old parser did for times shown in "Mins".
+     */
+    static secondsToHours(seconds: number): number;
+    static splitPlatforms(platforms: string): string[];
+    private static stripHtml;
+    /**
+     * Parses the old detail page markup (before the site moved its data into __NEXT_DATA__).
+     */
+    static parseLegacyDetails(html: string, id: string): HowLongToBeatEntry;
+    /**
      * Utility method used for parsing a given input text (like
      * &quot;44&#189;&quot;) as double (like &quot;44.5&quot;). The input text
      * represents the amount of hours needed to play this game.
